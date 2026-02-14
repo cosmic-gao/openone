@@ -2,6 +2,9 @@
   "name": "@openapp/database",
   "version": "0.1.0",
   "private": true,
+  "openone": {
+    "appId": "01JZ6M4A8G0D9GZ5H9E2X3P8QH"
+  },
   "scripts": {
     "dev": "next dev -p 3003",
     "build": "next build",
@@ -19,22 +22,22 @@
     "@radix-ui/react-slot": "^1.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "drizzle-orm": "^0.44.5",
+    "drizzle-orm": "^0.45.1",
     "lucide-react": "^0.564.0",
     "next": "16.1.6",
-    "postgres": "^3.4.7",
+    "postgres": "^3.4.8",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^25.2.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.9",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   }
 }

@@ -23,7 +23,7 @@ function getDatabase() {
 }
 
 function getLink(key: string) {
-  if (key === "admin") {
+  if (key === "gateway") {
     return "http://localhost:3001";
   }
   if (key === "permission") {
@@ -54,7 +54,7 @@ async function getApps() {
     return [];
   }
 
-  const response = await fetch(`${getPermission()}/api/permission-set?applicationKey=admin`, {
+  const response = await fetch(`${getPermission()}/api/permission-set?applicationKey=gateway`, {
     headers: { cookie: `${getCookie()}=${token}` },
     cache: "no-store",
   });
@@ -84,7 +84,7 @@ export default async function Page() {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col gap-6 px-6 py-10">
       <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold">Admin</h1>
+        <h1 className="text-2xl font-semibold">Gateway</h1>
         <p className="text-sm text-muted-foreground">User: {user?.userId || "unknown"}</p>
       </header>
 

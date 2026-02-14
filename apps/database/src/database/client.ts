@@ -1,4 +1,6 @@
-import { createDatabase } from "@openone/database"
+import { buildPgSchemaName, createDatabase } from "@openone/database"
+
+import packageJson from "../../package.json"
 
 /**
  * 获取 Database 的数据库客户端。
@@ -12,5 +14,11 @@ export function getDatabase() {
     throw new Error("DATABASE_URL is required.")
   }
 
-  return createDatabase({ databaseUrl, applicationName: "database" })
+  const appId = packageJson.openone?.appId
+  if (!appId) {
+    throw new Error("openone.appId is required.")
+  }
+
+  const pgSchema = buildPgSchemaName({ appId, packageName: packageJson.name })
+  return createDatabase({ databaseUrl, applicationName: "database", pgSchema })
 }

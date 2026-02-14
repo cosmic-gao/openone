@@ -12,7 +12,7 @@ function getSet(userId: string, applicationKey: string) {
       version: "1",
       codes: [
         `${applicationKey}:app:use`,
-        "admin:app:use",
+        "gateway:app:use",
         "permission:app:use",
         "database:app:use",
       ],
@@ -21,7 +21,7 @@ function getSet(userId: string, applicationKey: string) {
 
   return {
     version: "1",
-    codes: [`${applicationKey}:app:use`, "admin:app:use"],
+    codes: [`${applicationKey}:app:use`, "gateway:app:use"],
   }
 }
 
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url)
-  const applicationKey = url.searchParams.get("applicationKey") || "admin"
+  const applicationKey = url.searchParams.get("applicationKey") || "gateway"
 
   if (!process.env.DATABASE_URL) {
     return NextResponse.json(getSet(user.userId, applicationKey))

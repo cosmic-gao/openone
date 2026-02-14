@@ -14,7 +14,7 @@
     "@openone/kernel": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.19.33",
-    "typescript": "^5.8.2"
+    "@types/node": "^25.2.3",
+    "typescript": "^5.9.3"
   }
 }

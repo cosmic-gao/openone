@@ -2,6 +2,9 @@
   "name": "@openapp/gateway",
   "version": "0.1.0",
   "private": true,
+  "openone": {
+    "appId": "01JZ6M3ZQ8W6A7R8N7GZ8Q2G4M"
+  },
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
@@ -23,12 +26,12 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^25.2.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   }
 }
