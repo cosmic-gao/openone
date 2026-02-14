@@ -1,0 +1,20 @@
+{
+  "name": "@openone/authentication",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "echo \"no lint configured\"",
+    "test": "echo \"no test configured\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@openone/kernel": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.8.2"
+  }
+}
