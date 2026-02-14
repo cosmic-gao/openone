@@ -8,7 +8,7 @@ export function SigninForm() {
   const search = useSearchParams()
   const next = search.get("next")
 
-  const fallback = useMemo(() => process.env.NEXT_PUBLIC_MANAGER_URL || "http://localhost:3001", [])
+  const fallback = useMemo(() => process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001", [])
   const redirect = next || fallback
 
   const [email, setEmail] = useState("demo@openone.com")
@@ -74,4 +74,3 @@ export function SigninForm() {
     </main>
   )
 }
-

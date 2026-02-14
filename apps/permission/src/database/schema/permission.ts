@@ -1,4 +1,4 @@
-import { index, pgTable, text, timestamp } from "drizzle-orm/pg-core"
+import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core"
 
 export const permission = pgTable(
   "permission",
@@ -6,6 +6,7 @@ export const permission = pgTable(
     code: text("code").primaryKey(),
     applicationKey: text("application_key").notNull(),
     name: text("name").notNull(),
+    isEnabled: boolean("is_enabled").notNull().default(true),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().defaultNow(),
   },
   (table) => {

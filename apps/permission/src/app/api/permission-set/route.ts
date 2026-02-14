@@ -1,19 +1,10 @@
-import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 
-import { createReader } from "@openone/authentication"
+import { and, desc, eq, inArray, sql } from "drizzle-orm"
 
-function getCookie() {
-  return process.env.SESSION_COOKIE || "openone_session"
-}
-
-function getSecret() {
-  const secret = process.env.SESSION_SECRET
-  if (!secret) {
-    throw new Error("SESSION_SECRET is required.")
-  }
-  return secret
-}
+import { getDatabase } from "@/database/client"
+import { permission, permissionVersion, rolePermission, userRole } from "@/database/schema"
+import { readUser } from "@/server/auth"
 
 function getSet(userId: string, applicationKey: string) {
   if (userId.includes("admin")) {
@@ -21,16 +12,16 @@ function getSet(userId: string, applicationKey: string) {
       version: "1",
       codes: [
         `${applicationKey}:app:use`,
-        "manager:app:use",
+        "admin:app:use",
         "permission:app:use",
-        "database-center:app:use",
+        "database:app:use",
       ],
     }
   }
 
   return {
     version: "1",
-    codes: [`${applicationKey}:app:use`, "manager:app:use"],
+    codes: [`${applicationKey}:app:use`, "admin:app:use"],
   }
 }
 
@@ -41,16 +32,52 @@ function getSet(userId: string, applicationKey: string) {
  * @returns 权限集响应。
  */
 export async function GET(request: Request) {
-  const header = (await headers()).get("cookie") || undefined
-  const reader = createReader({ cookieName: getCookie(), secret: getSecret() })
-  const session = await reader.read(header ? { cookieHeader: header } : {})
-
-  if (!session.isSuccess) {
+  const user = await readUser()
+  if (!user) {
     return NextResponse.json({ message: "Unauthorized." }, { status: 401 })
   }
 
   const url = new URL(request.url)
-  const applicationKey = url.searchParams.get("applicationKey") || "manager"
+  const applicationKey = url.searchParams.get("applicationKey") || "admin"
 
-  return NextResponse.json(getSet(session.value.userId, applicationKey))
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json(getSet(user.userId, applicationKey))
+  }
+
+  const database = getDatabase()
+
+  const versionList = await database
+    .select({ number: sql<number>`max(${permissionVersion.number})` })
+    .from(permissionVersion)
+    .where(eq(permissionVersion.applicationKey, applicationKey))
+
+  const number = versionList[0]?.number || 0
+
+  const roleList = await database
+    .select({ roleId: userRole.roleId })
+    .from(userRole)
+    .where(eq(userRole.userId, user.userId))
+
+  const roleIds = roleList.map((item) => item.roleId)
+  if (roleIds.length === 0) {
+    return NextResponse.json({ version: String(number), codes: [] })
+  }
+
+  const codeList = await database
+    .select({ code: rolePermission.permissionCode })
+    .from(rolePermission)
+    .where(inArray(rolePermission.roleId, roleIds))
+    .orderBy(desc(rolePermission.permissionCode))
+
+  const codes = codeList.map((item) => item.code)
+  if (codes.length === 0) {
+    return NextResponse.json({ version: String(number), codes: [] })
+  }
+
+  const enabled = await database
+    .select({ code: permission.code })
+    .from(permission)
+    .where(and(inArray(permission.code, codes), eq(permission.isEnabled, true)))
+
+  return NextResponse.json({ version: String(number), codes: enabled.map((item) => item.code) })
 }
