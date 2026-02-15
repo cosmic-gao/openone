@@ -18,9 +18,12 @@
 
 ## 3. 仓库结构
 
+- App 模板与版本策略：
+  - 所有 `apps/*` 基于本地模板 `e:\\next-shadcn-dashboard-starter` 的工程结构与 UI 约定构建。
+  - 依赖版本与基础配置以仓库当前统一版本为准（持续跟随最新），避免与模板版本绑定导致降级。
 - `apps/*`：业务应用与平台应用（Next.js App Router）。
   - `apps/login`：登录入口，签发会话 Cookie。
-  - `apps/gateway`：网关/聚合入口，通过 Cookie 调用权限服务决定可访问的 App。
+  - `apps/gateway`：主应用（壳）与菜单入口，通过无界微前端集成其它 App，并基于权限服务控制可见菜单。
   - `apps/permission`：权限管理应用（权限码注册、启用/禁用、版本发布、用户权限集查询）。
   - `apps/database`：数据库 Schema 元数据管理应用（Schema、版本、发布态）。
   - `apps/admin`：发布治理应用（上传包、审核发布、同步到 permission/database）。
@@ -73,6 +76,17 @@
 - 环境依赖：
   - `PERMISSION_URL`、`DATABASE_APP_URL` 指向对应服务地址。
   - 需要 Admin 自己具备登录 Cookie（复用 `SESSION_COOKIE/SESSION_SECRET`）。
+
+### 4.5 Gateway App（主应用壳与菜单）
+
+- 责任：
+  - 提供统一布局与菜单（Sidebar + Header）。
+  - 通过无界微前端（Wujie）集成其它 App（login/admin/permission/database）。
+  - 基于 Permission App 返回的 `permission-set` 控制菜单可见性。
+- 集成方式：
+  - 主应用路由：`/dashboard/*`
+  - 子应用容器：`/dashboard/app/[app]` 使用 WujieReact 以 `url=http://localhost:xxxx` 方式加载子应用。
+  - 子应用仍可独立访问与开发（本地端口不变）。
 
 ## 5. 数据隔离：单库多 schema（pgSchema）
 

@@ -23,6 +23,18 @@ importers:
       '@openone/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@radix-ui/react-slot':
+        specifier: ^1.2.4
+        version: 1.2.4(@types/react@19.2.14)(react@19.2.3)
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: ^0.564.0
+        version: 0.564.0(react@19.2.3)
       next:
         specifier: 16.1.6
         version: 16.1.6(@babel/core@7.29.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -32,6 +44,9 @@ importers:
       react-dom:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
+      tailwind-merge:
+        specifier: ^3.4.0
+        version: 3.4.0
     devDependencies:
       '@types/node':
         specifier: ^25.2.3
@@ -48,6 +63,9 @@ importers:
       eslint-config-next:
         specifier: 16.1.6
         version: 16.1.6(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+      tailwindcss:
+        specifier: ^4.1.18
+        version: 4.1.18
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -151,6 +169,12 @@ importers:
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
+      wujie:
+        specifier: ^1.0.29
+        version: 1.0.29
+      wujie-react:
+        specifier: ^1.0.29
+        version: 1.0.29(react@19.2.3)
     devDependencies:
       '@types/node':
         specifier: ^25.2.3
@@ -397,6 +421,10 @@ packages:
     resolution: {integrity: sha512-IyDgFV5GeDUVX4YdF/3CPULtVGSXXMLh1xVIgdCgxApktqnQV0r7/8Nqthg+8YLGaAtdyIlo2qIdZrbCv4+7ww==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+
+  '@babel/runtime@7.28.6':
+    resolution: {integrity: sha512-05WQkdpL9COIMz4LjTxGpPNCdlpyimKppYNoJ5Di5EUObifl8t4tuLuUBBZEpoLYOmfvIWrsp9fCl0HoPRVTdA==}
+    engines: {node: '>=6.9.0'}
 
   '@babel/template@7.28.6':
     resolution: {integrity: sha512-YA6Ma2KsCdGb+WC6UpBVFJGXL58MDA6oyONbjyF/+5sBgxY/dwkhLogbMT2GXXyU84/IhRw/2D1Os1B/giz+BQ==}
@@ -2497,6 +2525,14 @@ packages:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
 
+  wujie-react@1.0.29:
+    resolution: {integrity: sha512-6XKSpHwaRPKhmn6glkt4fKpVjnKWE2Lfd7hG/ACmmCsy+65aQCIrD91eJb/qL6hyPnpGQMiPCJeVhPFyDPpqzw==}
+    peerDependencies:
+      react: '>=16.0.0'
+
+  wujie@1.0.29:
+    resolution: {integrity: sha512-u7PmBT4l5ov7ciwmZNG8DLIRKrYrnXDa0LnAFgRQikJ/ZrVZYzzSNz6duzEJoj8/o46dnMy/g9Hh/PBYGbgFUw==}
+
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
@@ -2591,6 +2627,8 @@ snapshots:
   '@babel/parser@7.29.0':
     dependencies:
       '@babel/types': 7.29.0
+
+  '@babel/runtime@7.28.6': {}
 
   '@babel/template@7.28.6':
     dependencies:
@@ -4808,6 +4846,16 @@ snapshots:
       isexe: 2.0.0
 
   word-wrap@1.2.5: {}
+
+  wujie-react@1.0.29(react@19.2.3):
+    dependencies:
+      prop-types: 15.8.1
+      react: 19.2.3
+      wujie: 1.0.29
+
+  wujie@1.0.29:
+    dependencies:
+      '@babel/runtime': 7.28.6
 
   yallist@3.1.1: {}
 
