@@ -1,0 +1,29 @@
+{
+    "appId": "my-app",
+    "appName": "我的应用",
+    "version": "1.0.0",
+    "menus": [
+        {
+            "key": "home",
+            "label": "首页",
+            "icon": "LayoutGrid",
+            "path": "/"
+        }
+    ],
+    "permissions": [
+        {
+            "code": "read",
+            "name": "查看",
+            "description": "允许查看数据"
+        },
+        {
+            "code": "write",
+            "name": "编辑",
+            "description": "允许编辑数据"
+        }
+    ],
+    "database": {
+        "schemaName": "my_app",
+        "migrations": "./drizzle"
+    }
+}

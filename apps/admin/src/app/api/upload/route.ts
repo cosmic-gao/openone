@@ -1,0 +1,147 @@
+import { NextRequest, NextResponse } from 'next/server';
+import type { ApiResponse, AppConfig } from '@openone/types';
+import { createLogger } from '@openone/utils';
+import fs from 'fs/promises';
+import path from 'path';
+import AdmZip from 'adm-zip';
+
+const logger = createLogger('admin-app');
+const STORAGE_PATH = process.env.APP_STORAGE_PATH || './storage/apps';
+const PERMISSION_APP_URL = process.env.PERMISSION_APP_URL || 'http://localhost:3003';
+const DB_MANAGER_APP_URL = process.env.DB_MANAGER_APP_URL || 'http://localhost:3004';
+
+/**
+ * POST /api/upload
+ * 处理APP ZIP包上传
+ * 流程：接收文件 → 解压 → 校验配置 → 同步权限 → 同步Schema → 注册APP
+ */
+export async function POST(
+    request: NextRequest
+): Promise<NextResponse<ApiResponse<{ appId: string; version: string }>>> {
+    try {
+        const formData = await request.formData();
+        const file = formData.get('file') as File;
+
+        if (!file) {
+            return NextResponse.json(
+                { success: false, error: '请上传ZIP文件' },
+                { status: 400 }
+            );
+        }
+
+        // 1. 读取ZIP文件
+        const buffer = Buffer.from(await file.arrayBuffer());
+        const zip = new AdmZip(buffer);
+
+        // 2. 校验openone.config.json是否存在
+        const configEntry = zip.getEntry('openone.config.json');
+        if (!configEntry) {
+            return NextResponse.json(
+                { success: false, error: 'ZIP包中缺少 openone.config.json 配置文件' },
+                { status: 400 }
+            );
+        }
+
+        // 3. 解析配置
+        const configText = configEntry.getData().toString('utf-8');
+        let appConfig: AppConfig;
+        try {
+            appConfig = JSON.parse(configText);
+        } catch {
+            return NextResponse.json(
+                { success: false, error: 'openone.config.json 格式错误' },
+                { status: 400 }
+            );
+        }
+
+        const { appId, appName, version, permissions, database, menus } = appConfig;
+        logger.info('开始处理APP上传', { appId, version });
+
+        // 4. 解压到存储目录
+        const appDir = path.join(STORAGE_PATH, appId, version);
+        await fs.mkdir(appDir, { recursive: true });
+        zip.extractAllTo(appDir, true);
+        logger.info('文件解压完成', { appDir });
+
+        // 5. 同步权限到permission-app
+        if (permissions?.length) {
+            try {
+                await fetch(`${PERMISSION_APP_URL}/api/permissions/sync`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ appId, appName, permissions }),
+                });
+                logger.info('权限同步完成', { appId, count: permissions.length });
+            } catch (err) {
+                logger.warn('权限同步失败（permission-app可能未启动）', err);
+            }
+        }
+
+        // 6. 同步数据库Schema
+        if (database?.schemaName) {
+            try {
+                // 读取迁移文件
+                const migrationsDir = path.join(appDir, database.migrations || 'drizzle');
+                let migrations: { filename: string; content: string }[] = [];
+
+                try {
+                    const files = await fs.readdir(migrationsDir);
+                    const sqlFiles = files.filter((f) => f.endsWith('.sql'));
+                    migrations = await Promise.all(
+                        sqlFiles.map(async (filename) => ({
+                            filename,
+                            content: await fs.readFile(path.join(migrationsDir, filename), 'utf-8'),
+                        }))
+                    );
+                } catch {
+                    logger.warn('未找到迁移文件目录', { migrationsDir });
+                }
+
+                await fetch(`${DB_MANAGER_APP_URL}/api/schemas/sync`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        appId,
+                        appName,
+                        schemaName: database.schemaName,
+                        migrations,
+                    }),
+                });
+                logger.info('Schema同步完成', { appId, schemaName: database.schemaName });
+            } catch (err) {
+                logger.warn('Schema同步失败（db-manager-app可能未启动）', err);
+            }
+        }
+
+        // 7. 注册APP到本地注册表
+        try {
+            await fetch(`${request.nextUrl.origin}/api/apps`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    appId,
+                    appName,
+                    description: `${appName} v${version}`,
+                    menuConfig: menus,
+                    latestVersion: version,
+                    url: `${request.nextUrl.origin}/apps/${appId}/${version}`,
+                }),
+            });
+        } catch (err) {
+            logger.error('APP注册失败', err);
+        }
+
+        logger.info('APP发布完成', { appId, version });
+
+        return NextResponse.json({
+            success: true,
+            data: { appId, version },
+        });
+    } catch (err) {
+        logger.error('APP上传处理失败', err);
+        return NextResponse.json(
+            { success: false, error: '上传处理失败' },
+            { status: 500 }
+        );
+    }
+}
