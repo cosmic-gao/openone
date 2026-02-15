@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import { signer } from "@openone/authentication";
+import { signer } from "@openone/auth";
 
 function getCookie() {
   return process.env.SESSION_COOKIE || "openone_session";

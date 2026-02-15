@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { eq } from "drizzle-orm"
 
 import { getDatabase } from "@/database/client"
 import { application } from "@/database/schema"
@@ -28,11 +29,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Invalid input." }, { status: 400 })
   }
 
-  const secret = getSecret()
   const database = getDatabase()
+  const existing = await database.select({ secret: application.secret }).from(application).where(eq(application.key, key))
+  const current = existing[0]?.secret
+  if (current) {
+    return NextResponse.json({ key, secret: current })
+  }
 
+  const secret = getSecret()
   await database.insert(application).values({ key, name, secret })
-
   return NextResponse.json({ key, secret })
 }
 

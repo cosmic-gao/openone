@@ -9,12 +9,10 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "provision:db": "node scripts/provision-schemas.mjs",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {
-    "@openone/database": "workspace:*",
     "turbo": "^2.8.8",
     "typescript": "^5.9.3"
   }

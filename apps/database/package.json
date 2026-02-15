@@ -13,10 +13,11 @@
     "test": "echo \"no test configured\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "generate": "drizzle-kit generate",
-    "migrate": "drizzle-kit migrate"
+    "db:ensure": "node scripts/ensure-schema.mjs",
+    "migrate": "pnpm db:ensure && drizzle-kit migrate"
   },
   "dependencies": {
-    "@openone/authentication": "workspace:*",
+    "@openone/auth": "workspace:*",
     "@openone/database": "workspace:*",
     "@openone/types": "workspace:*",
     "@radix-ui/react-slot": "^1.2.4",

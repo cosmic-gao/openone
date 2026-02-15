@@ -1,6 +1,6 @@
 import { headers } from "next/headers"
 
-import { context, reader } from "@openone/authentication"
+import { context, reader } from "@openone/auth"
 
 function getCookie() {
   return process.env.SESSION_COOKIE || "openone_session"

@@ -1,5 +1,5 @@
 {
-  "name": "@openone/authentication",
+  "name": "@openone/auth",
   "private": true,
   "type": "module",
   "exports": {

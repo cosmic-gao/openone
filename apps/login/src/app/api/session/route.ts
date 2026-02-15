@@ -1,7 +1,7 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
-import { signer } from "@openone/authentication"
+import { signer } from "@openone/auth"
 
 function getCookie() {
   return process.env.SESSION_COOKIE || "openone_session"
