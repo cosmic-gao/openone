@@ -1,5 +1,5 @@
 import { defineConfig } from "drizzle-kit"
-import { buildPgSchemaName } from "@openone/database"
+import { schemaName } from "@openone/database"
 
 import packageJson from "./package.json"
 
@@ -13,7 +13,7 @@ export default defineConfig({
       if (!appId) {
         throw new Error("openone.appId is required.")
       }
-      const schema = buildPgSchemaName({ appId, packageName: packageJson.name })
+      const schema = schemaName({ appId, packageName: packageJson.name })
       const url = new URL(process.env.DATABASE_URL!)
       const existing = url.searchParams.get("options") || ""
       if (!existing.includes("search_path=")) {

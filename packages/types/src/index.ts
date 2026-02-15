@@ -96,3 +96,14 @@ export type PermissionGate = Readonly<{
    */
   getPermissionSet: (query: PermissionQuery) => Promise<PermissionSet>
 }>
+
+export type Plug = Readonly<{
+  name: string
+  setup?: (kernel: Kernel) => void
+}>
+
+export type Kernel = Readonly<{
+  use: (plug: Plug) => Kernel
+  set: (key: string, value: unknown) => void
+  get: <TValue = unknown>(key: string) => TValue | undefined
+}>

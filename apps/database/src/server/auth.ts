@@ -1,6 +1,6 @@
 import { headers } from "next/headers"
 
-import { createContext, createReader } from "@openone/authentication"
+import { context, reader } from "@openone/authentication"
 
 function getCookie() {
   return process.env.SESSION_COOKIE || "openone_session"
@@ -22,8 +22,7 @@ function getSecret() {
  */
 export async function readUser() {
   const cookie = (await headers()).get("cookie") || undefined
-  const reader = createReader({ cookieName: getCookie(), secret: getSecret() })
-  const session = await reader.read(cookie ? { cookieHeader: cookie } : {})
-  return session.isSuccess ? createContext(session.value) : null
+  const sessionReader = reader({ cookieName: getCookie(), secret: getSecret() })
+  const session = await sessionReader.read(cookie ? { cookieHeader: cookie } : {})
+  return session.isSuccess ? context(session.value) : null
 }
-

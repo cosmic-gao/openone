@@ -2,7 +2,7 @@ import fs from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { buildPgSchemaName, ensureSchemaExists } from "@openone/database"
+import { schemaInit, schemaName } from "@openone/database"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -43,14 +43,14 @@ async function main() {
         continue
       }
 
-      const schemaName = buildPgSchemaName({ appId, packageName })
+      const name = schemaName({ appId, packageName })
       if (dryRun) {
-        results.push({ appDir: path.basename(appDir), packageName, appId, schemaName, created: null })
+        results.push({ appDir: path.basename(appDir), packageName, appId, schema: name, created: null })
         continue
       }
 
-      const { created } = await ensureSchemaExists({ url, schemaName })
-      results.push({ appDir: path.basename(appDir), packageName, appId, schemaName, created })
+      const { created } = await schemaInit({ url, name })
+      results.push({ appDir: path.basename(appDir), packageName, appId, schema: name, created })
     } catch {
       continue
     }

@@ -1,5 +1,5 @@
 {
-  "name": "@openone/kernel",
+  "name": "@openone/types",
   "private": true,
   "type": "module",
   "exports": {

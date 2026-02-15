@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import { createSigner } from "@openone/authentication";
+import { signer } from "@openone/authentication";
 
 function getCookie() {
   return process.env.SESSION_COOKIE || "openone_session";
@@ -42,8 +42,8 @@ async function getUser() {
     return null;
   }
 
-  const signer = createSigner({ secret: getSecret(), cookieName: getCookie() });
-  const session = signer.verify(token);
+  const sessionSigner = signer({ secret: getSecret(), cookieName: getCookie() });
+  const session = sessionSigner.verify(token);
   return session.isSuccess ? session.value : null;
 }
 

@@ -1,4 +1,4 @@
-import type { PermissionCode, PermissionGate, PermissionSet, PlatformError, Result, UserContext } from "@openone/kernel"
+import type { PermissionCode, PermissionGate, PermissionSet, PlatformError, Plug, Result, UserContext } from "@openone/types"
 
 export type PermissionService = Readonly<{
   /**
@@ -19,15 +19,16 @@ export type PermissionService = Readonly<{
  * @returns 权限门。
  * @throws Error 适配器无效时抛出。
  * @example
- * const gate = createGate(permissionService)
- * const isAllowed = await gate.hasPermission(context, "crm:user:list")
+ * const perm = gate(permissionService)
+ * const isAllowed = await perm.hasPermission(context, "crm:user:list")
  */
-export function createGate(permissionService: PermissionService): PermissionGate {
+export function gate(permissionService: PermissionService): PermissionGate {
   return {
     async hasPermission(context: UserContext, permissionCode: PermissionCode): Promise<boolean> {
+      const applicationKey = permissionCode.split(":")[0] || ""
       const result = await permissionService.getPermissionSet({
         userId: context.userId,
-        applicationKey: "",
+        applicationKey,
       })
 
       if (!result.isSuccess) {
@@ -48,6 +49,15 @@ export function createGate(permissionService: PermissionService): PermissionGate
       }
 
       return result.value
+    },
+  }
+}
+
+export function plugin(permissionService: PermissionService): Plug {
+  return {
+    name: "perm",
+    setup(kernel) {
+      kernel.set("perm", gate(permissionService))
     },
   }
 }

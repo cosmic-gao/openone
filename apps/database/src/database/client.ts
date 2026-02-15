@@ -1,4 +1,4 @@
-import { buildPgSchemaName, createDatabase } from "@openone/database"
+import { db, schemaName } from "@openone/database"
 
 import packageJson from "../../package.json"
 
@@ -19,6 +19,6 @@ export function getDatabase() {
     throw new Error("openone.appId is required.")
   }
 
-  const pgSchema = buildPgSchemaName({ appId, packageName: packageJson.name })
-  return createDatabase({ databaseUrl, applicationName: "database", pgSchema })
+  const pgSchema = schemaName({ appId, packageName: packageJson.name })
+  return db({ databaseUrl, applicationName: "database", pgSchema })
 }

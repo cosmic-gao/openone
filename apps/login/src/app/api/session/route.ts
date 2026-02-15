@@ -1,7 +1,7 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
-import { createSigner } from "@openone/authentication"
+import { signer } from "@openone/authentication"
 
 function getCookie() {
   return process.env.SESSION_COOKIE || "openone_session"
@@ -30,8 +30,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Invalid credentials." }, { status: 400 })
   }
 
-  const signer = createSigner({ secret: getSecret(), cookieName: getCookie() })
-  const token = signer.sign({
+  const sessionSigner = signer({ secret: getSecret(), cookieName: getCookie() })
+  const token = sessionSigner.sign({
     sessionId: crypto.randomUUID(),
     tenantId: "tenant",
     userId: email,

@@ -11,7 +11,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@openone/kernel": "workspace:*"
+    "@openone/types": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

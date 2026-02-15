@@ -1,4 +1,4 @@
-import type { PlatformError, Result, UserContext } from "@openone/kernel"
+import type { PlatformError, Plug, Result, UserContext } from "@openone/types"
 import { createHmac, timingSafeEqual } from "node:crypto"
 
 export type Session = Readonly<{
@@ -81,7 +81,7 @@ function createHash(secret: string, text: string): string {
  * @returns 会话签名器。
  * @throws Error secret 为空时抛出。
  */
-export function createSigner(options: SessionOptions): SessionSigner {
+export function signer(options: SessionOptions): SessionSigner {
   if (!options.secret) {
     throw new Error("SESSION_SECRET is required.")
   }
@@ -138,8 +138,8 @@ export function createSigner(options: SessionOptions): SessionSigner {
  * @param options 会话读取参数。
  * @returns 会话读取器。
  */
-export function createReader(options: SessionOptions): SessionReader {
-  const signer = createSigner(options)
+export function reader(options: SessionOptions): SessionReader {
+  const sessionSigner = signer(options)
 
   return {
     async read(input) {
@@ -153,7 +153,7 @@ export function createReader(options: SessionOptions): SessionReader {
         return fail({ code: "UNAUTHORIZED", message: "Missing session." })
       }
 
-      return signer.verify(token)
+      return sessionSigner.verify(token)
     },
   }
 }
@@ -164,12 +164,21 @@ export function createReader(options: SessionOptions): SessionReader {
  * @param session 待转换会话。
  * @returns 用户上下文。
  * @example
- * const context = createContext({ sessionId: "s1", tenantId: "t1", userId: "u1" })
+ * const ctx = context({ sessionId: "s1", tenantId: "t1", userId: "u1" })
  */
-export function createContext(session: Session): UserContext {
+export function context(session: Session): UserContext {
   return {
     sessionId: session.sessionId,
     tenantId: session.tenantId,
     userId: session.userId,
+  }
+}
+
+export function plugin(options: SessionOptions): Plug {
+  return {
+    name: "auth",
+    setup(kernel) {
+      kernel.set("auth", { signer: signer(options), reader: reader(options), context })
+    },
   }
 }

@@ -26,9 +26,9 @@ importers:
       '@openone/database':
         specifier: workspace:*
         version: link:../../packages/database
-      '@openone/kernel':
+      '@openone/types':
         specifier: workspace:*
-        version: link:../../packages/kernel
+        version: link:../../packages/types
       '@radix-ui/react-slot':
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.14)(react@19.2.3)
@@ -90,9 +90,9 @@ importers:
       '@openone/authentication':
         specifier: workspace:*
         version: link:../../packages/authentication
-      '@openone/kernel':
+      '@openone/types':
         specifier: workspace:*
-        version: link:../../packages/kernel
+        version: link:../../packages/types
       '@radix-ui/react-slot':
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.14)(react@19.2.3)
@@ -145,9 +145,9 @@ importers:
       '@openone/authentication':
         specifier: workspace:*
         version: link:../../packages/authentication
-      '@openone/kernel':
+      '@openone/types':
         specifier: workspace:*
-        version: link:../../packages/kernel
+        version: link:../../packages/types
       '@radix-ui/react-slot':
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.14)(react@19.2.3)
@@ -203,9 +203,9 @@ importers:
       '@openone/database':
         specifier: workspace:*
         version: link:../../packages/database
-      '@openone/kernel':
+      '@openone/types':
         specifier: workspace:*
-        version: link:../../packages/kernel
+        version: link:../../packages/types
       '@radix-ui/react-slot':
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.14)(react@19.2.3)
@@ -264,9 +264,9 @@ importers:
 
   packages/authentication:
     dependencies:
-      '@openone/kernel':
+      '@openone/types':
         specifier: workspace:*
-        version: link:../kernel
+        version: link:../types
     devDependencies:
       '@types/node':
         specifier: ^25.2.3
@@ -277,6 +277,9 @@ importers:
 
   packages/database:
     dependencies:
+      '@openone/types':
+        specifier: workspace:*
+        version: link:../types
       drizzle-orm:
         specifier: ^0.45.1
         version: 0.45.1(postgres@3.4.8)
@@ -288,17 +291,17 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/kernel:
+  packages/permission:
+    dependencies:
+      '@openone/types':
+        specifier: workspace:*
+        version: link:../types
     devDependencies:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/permission:
-    dependencies:
-      '@openone/kernel':
-        specifier: workspace:*
-        version: link:../kernel
+  packages/types:
     devDependencies:
       typescript:
         specifier: ^5.9.3
