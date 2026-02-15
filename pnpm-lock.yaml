@@ -17,9 +17,9 @@ importers:
 
   apps/admin:
     dependencies:
-      '@openone/authentication':
+      '@openone/auth':
         specifier: workspace:*
-        version: link:../../packages/authentication
+        version: link:../../packages/auth
       '@openone/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -47,16 +47,16 @@ importers:
         version: 9.39.2(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
 
   apps/database:
     dependencies:
-      '@openone/authentication':
+      '@openone/auth':
         specifier: workspace:*
-        version: link:../../packages/authentication
+        version: link:../../packages/auth
       '@openone/database':
         specifier: workspace:*
         version: link:../../packages/database
@@ -111,7 +111,7 @@ importers:
         version: 9.39.2(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
@@ -121,9 +121,9 @@ importers:
 
   apps/gateway:
     dependencies:
-      '@openone/authentication':
+      '@openone/auth':
         specifier: workspace:*
-        version: link:../../packages/authentication
+        version: link:../../packages/auth
       '@openone/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -176,9 +176,9 @@ importers:
 
   apps/login:
     dependencies:
-      '@openone/authentication':
+      '@openone/auth':
         specifier: workspace:*
-        version: link:../../packages/authentication
+        version: link:../../packages/auth
       '@openone/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -231,9 +231,9 @@ importers:
 
   apps/permission:
     dependencies:
-      '@openone/authentication':
+      '@openone/auth':
         specifier: workspace:*
-        version: link:../../packages/authentication
+        version: link:../../packages/auth
       '@openone/database':
         specifier: workspace:*
         version: link:../../packages/database
@@ -296,7 +296,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/authentication:
+  packages/auth:
     dependencies:
       '@openone/types':
         specifier: workspace:*

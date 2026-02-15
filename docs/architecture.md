@@ -38,7 +38,7 @@
   - 验证登录输入（当前示例为简单校验）。
   - 生成会话（`sessionId/tenantId/userId`）并写入 Cookie。
 - 核心实现：
-  - 使用 `@openone/authentication` 的 `signer` 生成 token。
+  - 使用 `@openone/auth` 的 `signer` 生成 token。
   - Cookie 名称与密钥来自 `SESSION_COOKIE` / `SESSION_SECRET`。
 
 ### 4.2 Permission App（权限）
@@ -216,7 +216,7 @@ Admin 当前接收的 Bundle 为 JSON（或附件 JSON），关键字段：
 
 - Token：`payload.base64url + "." + HMAC_SHA256(secret, payload)`
 - Cookie：`SESSION_COOKIE`（默认 `openone_session`）
-- 读取：各 App 的 `readUser()` 统一复用 `@openone/authentication` 的 `reader/context`
+- 读取：各 App 的 `readUser()` 统一复用 `@openone/auth` 的 `reader/context`
 
 ### 8.2 发布与同步安全
 
