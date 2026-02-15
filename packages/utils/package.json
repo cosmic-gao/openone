@@ -10,12 +10,12 @@
         "clean": "rimraf dist"
     },
     "dependencies": {
-        "jsonwebtoken": "^9.0.0"
+        "jsonwebtoken": "^9.0.2"
     },
     "devDependencies": {
         "@openone/types": "workspace:*",
-        "@types/jsonwebtoken": "^9.0.0",
-        "typescript": "^5.7.0",
-        "rimraf": "^6.0.0"
+        "@types/jsonwebtoken": "^9.0.8",
+        "typescript": "^5.7.3",
+        "rimraf": "^6.0.1"
     }
 }

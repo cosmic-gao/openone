@@ -10,12 +10,12 @@
         "clean": "rimraf dist"
     },
     "dependencies": {
-        "drizzle-orm": "^0.38.0",
-        "postgres": "^3.4.0"
+        "drizzle-orm": "^0.45.1",
+        "postgres": "^3.4.5"
     },
     "devDependencies": {
         "@openone/types": "workspace:*",
-        "typescript": "^5.7.0",
-        "rimraf": "^6.0.0"
+        "typescript": "^5.7.3",
+        "rimraf": "^6.0.1"
     }
 }

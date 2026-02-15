@@ -25,7 +25,7 @@ export function generateAccessToken(
         username: user.username,
         roles: user.roles,
     };
-    return jwt.sign(payload, secret, { expiresIn });
+    return jwt.sign(payload, secret, { expiresIn: expiresIn as any });
 }
 
 /**
@@ -40,7 +40,7 @@ export function generateRefreshToken(
     secret: string,
     expiresIn: string = DEFAULT_REFRESH_EXPIRY
 ): string {
-    return jwt.sign({ sub: userId }, secret, { expiresIn });
+    return jwt.sign({ sub: userId }, secret, { expiresIn: expiresIn as any });
 }
 
 /**

@@ -1,9 +1,9 @@
 export {
-    createAppSchema,
-    createClient,
-    executeInSchema,
-    createSchema,
-    dropSchema,
-    listSchemas,
-    closeAllConnections,
+    appSchema,
+    dbClient,
+    runSql,
+    addSchema,
+    delSchema,
+    getSchemas,
+    disconnect,
 } from './client';

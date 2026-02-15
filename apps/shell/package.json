@@ -12,20 +12,20 @@
     "dependencies": {
         "@openone/types": "workspace:*",
         "@openone/utils": "workspace:*",
-        "next": "^15.1.0",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0",
-        "wujie-react": "^1.0.0",
-        "wujie": "^1.0.0",
-        "zustand": "^5.0.0",
-        "lucide-react": "^0.468.0",
-        "tailwindcss": "^4.0.0",
-        "@tailwindcss/postcss": "^4.0.0"
+        "next": "^16.1.6",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+        "wujie-react": "^1.0.22",
+        "wujie": "^1.0.22",
+        "zustand": "^5.0.3",
+        "lucide-react": "^0.475.0",
+        "tailwindcss": "^4.1.18",
+        "@tailwindcss/postcss": "^4.1.18"
     },
     "devDependencies": {
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
-        "typescript": "^5.7.0",
-        "rimraf": "^6.0.0"
+        "typescript": "^5.7.3",
+        "rimraf": "^6.0.1"
     }
 }

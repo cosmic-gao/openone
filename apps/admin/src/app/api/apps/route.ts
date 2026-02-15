@@ -37,7 +37,7 @@ export async function POST(
         const existingIndex = appsStore.findIndex((a) => a.appId === appId);
 
         const app: AppRegistration = {
-            id: existingIndex >= 0 ? appsStore[existingIndex].id : appsStore.length + 1,
+            id: existingIndex >= 0 ? appsStore[existingIndex]!.id : appsStore.length + 1,
             appId,
             appName,
             description: description || '',
@@ -45,7 +45,7 @@ export async function POST(
             latestVersion: latestVersion || '1.0.0',
             menuConfig: menuConfig || [],
             url: url || '',
-            createdAt: existingIndex >= 0 ? appsStore[existingIndex].createdAt : new Date(),
+            createdAt: existingIndex >= 0 ? appsStore[existingIndex]!.createdAt : new Date(),
             updatedAt: new Date(),
         };
 

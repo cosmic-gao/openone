@@ -32,14 +32,11 @@ function getConnection(connectionUrl: string) {
  * @returns pgSchema实例，可用于定义table/enum
  * @example
  * ```ts
- * const authSchema = createAppSchema('auth');
- * const users = authSchema.table('users', {
- *     id: uuid('id').primaryKey().defaultRandom(),
- *     username: text('username').notNull(),
- * });
+ * const auth = appSchema('auth');
+ * const users = auth.table('users', { ... });
  * ```
  */
-export function createAppSchema(schemaName: string) {
+export function appSchema(schemaName: string) {
     let schema = pgSchemaPool.get(schemaName);
     if (!schema) {
         schema = pgSchema(schemaName);
@@ -56,11 +53,11 @@ export function createAppSchema(schemaName: string) {
  * @returns Drizzle ORM实例
  * @example
  * ```ts
- * const db = createClient(process.env.DATABASE_URL);
+ * const db = dbClient(process.env.DATABASE_URL);
  * const result = await db.select().from(users); // 自动查询 "auth"."users"
  * ```
  */
-export function createClient(connectionUrl: string, cacheKey?: string) {
+export function dbClient(connectionUrl: string, cacheKey?: string) {
     const key = cacheKey || connectionUrl;
     let client = drizzlePool.get(key);
     if (!client) {
@@ -78,7 +75,7 @@ export function createClient(connectionUrl: string, cacheKey?: string) {
  * @param sqlText - SQL语句
  * @returns 执行结果
  */
-export async function executeInSchema(
+export async function runSql(
     connectionUrl: string,
     schemaName: string,
     sqlText: string
@@ -93,7 +90,7 @@ export async function executeInSchema(
  * @param connectionUrl - 数据库连接URL
  * @param schemaName - 要创建的Schema名称
  */
-export async function createSchema(
+export async function addSchema(
     connectionUrl: string,
     schemaName: string
 ) {
@@ -107,7 +104,7 @@ export async function createSchema(
  * @param schemaName - 要删除的Schema名称
  * @param cascade - 是否级联删除Schema下所有对象
  */
-export async function dropSchema(
+export async function delSchema(
     connectionUrl: string,
     schemaName: string,
     cascade = false
@@ -124,7 +121,7 @@ export async function dropSchema(
  * @param connectionUrl - 数据库连接URL
  * @returns Schema名称列表
  */
-export async function listSchemas(
+export async function getSchemas(
     connectionUrl: string
 ): Promise<string[]> {
     const sql = getConnection(connectionUrl);
@@ -140,7 +137,7 @@ export async function listSchemas(
 /**
  * 关闭所有数据库连接（用于优雅退出）
  */
-export async function closeAllConnections() {
+export async function disconnect() {
     for (const [key, connection] of connectionPool) {
         await connection.end();
         connectionPool.delete(key);

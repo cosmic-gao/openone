@@ -1,24 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, SchemaSyncRequest, SchemaSyncResult, SchemaInfo } from '@openone/types';
-import { createClient, createSchema, executeInSchema } from '@openone/db';
+import { dbClient, addSchema, runSql } from '@openone/db';
 import { createLogger } from '@openone/utils';
 import { eq } from 'drizzle-orm';
 import { schemaRegistry, migrationHistory } from '../../../../db/schema';
 
-const logger = createLogger('db-manager-app');
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://openone:openone_dev@localhost:5432/openone';
+const logger = createLogger('db-manager');
+const DB_URL = process.env.DATABASE_URL || 'postgresql://openone:openone_dev@localhost:5432/openone';
 
 /**
- * 获取数据库客户端（单例）
+ * 获取数据库客户端
  */
 function getDb() {
-    return createClient(DATABASE_URL);
+    return dbClient(DB_URL);
 }
 
 /**
  * POST /api/schemas/sync
  * 同步APP的数据库Schema
- * 创建PG Schema + 执行迁移文件 + 持久化注册信息
  */
 export async function POST(
     request: NextRequest
@@ -37,7 +36,7 @@ export async function POST(
         const db = getDb();
         logger.info('开始同步Schema', { appId, schemaName });
 
-        // 1. 查询或创建注册记录
+        // 1. Check registry
         const existing = await db
             .select()
             .from(schemaRegistry)
@@ -57,9 +56,9 @@ export async function POST(
             });
         }
 
-        // 2. 创建PG Schema
+        // 2. Create Schema
         try {
-            await createSchema(DATABASE_URL, schemaName);
+            await addSchema(DB_URL, schemaName);
             logger.info('PG Schema创建完成', { schemaName });
         } catch (err) {
             logger.error('PG Schema创建失败', err);
@@ -73,49 +72,46 @@ export async function POST(
             });
         }
 
-        // 3. 执行迁移文件（跳过已执行的迁移）
+        // 3. Run Migrations
         if (migrations?.length) {
-            const executedMigrations = await db
+            const hasRun = await db
                 .select({ filename: migrationHistory.filename })
                 .from(migrationHistory)
                 .where(eq(migrationHistory.appId, appId));
 
-            const executedSet = new Set(executedMigrations.map((m) => m.filename));
+            const runSet = new Set(hasRun.map((m) => m.filename));
 
-            for (const migration of migrations) {
-                if (executedSet.has(migration.filename)) {
-                    logger.info('跳过已执行的迁移', { filename: migration.filename });
+            for (const item of migrations) {
+                if (runSet.has(item.filename)) {
                     continue;
                 }
 
                 try {
-                    await executeInSchema(DATABASE_URL, schemaName, migration.content);
+                    await runSql(DB_URL, schemaName, item.content);
                     await db.insert(migrationHistory).values({
                         appId,
-                        filename: migration.filename,
+                        filename: item.filename,
                         success: true,
                     });
-                    logger.info('迁移执行成功', { filename: migration.filename });
+                    logger.info('迁移成功', { filename: item.filename });
                 } catch (err) {
-                    const errorMsg = err instanceof Error ? err.message : String(err);
+                    const msg = err instanceof Error ? err.message : String(err);
                     await db.insert(migrationHistory).values({
                         appId,
-                        filename: migration.filename,
+                        filename: item.filename,
                         success: false,
-                        error: errorMsg,
+                        error: msg,
                     });
-                    logger.error('迁移执行失败', { filename: migration.filename, error: err });
+                    logger.error('迁移失败', { filename: item.filename, error: err });
                 }
             }
         }
 
-        // 4. 更新状态为active
+        // 4. Update status
         await db
             .update(schemaRegistry)
             .set({ status: 'active', updatedAt: new Date() })
             .where(eq(schemaRegistry.appId, appId));
-
-        logger.info('Schema同步完成', { appId, schemaName });
 
         return NextResponse.json({
             success: true,
@@ -132,14 +128,13 @@ export async function POST(
 
 /**
  * GET /api/schemas/sync
- * 获取所有已注册Schema列表（从数据库查询）
  */
 export async function GET(): Promise<NextResponse<ApiResponse<SchemaInfo[]>>> {
     try {
         const db = getDb();
-        const schemas = await db.select().from(schemaRegistry);
+        const list = await db.select().from(schemaRegistry);
 
-        const result: SchemaInfo[] = schemas.map((s) => ({
+        const result: SchemaInfo[] = list.map((s) => ({
             id: s.id,
             appId: s.appId,
             schemaName: s.schemaName,
@@ -157,4 +152,3 @@ export async function GET(): Promise<NextResponse<ApiResponse<SchemaInfo[]>>> {
         );
     }
 }
-
