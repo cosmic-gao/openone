@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, SchemaSyncRequest, SchemaSyncResult, SchemaInfo } from '@openone/types';
-import { dbClient, addSchema, runSql } from '@openone/db';
+import { dbClient, addSchema, runSql } from '@openone/database';
 import { createLogger } from '@openone/utils';
 import { eq } from 'drizzle-orm';
 import { schemaRegistry, migrationHistory } from '../../../../db/schema';

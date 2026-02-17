@@ -2,13 +2,9 @@
     "name": "@openone/types",
     "version": "0.1.0",
     "private": true,
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "scripts": {
-        "build": "tsc",
-        "dev": "tsc --watch",
-        "clean": "rimraf dist"
-    },
+    "main": "./index.ts",
+    "types": "./index.ts",
+    "type": "module",
     "devDependencies": {
         "typescript": "^5.7.3",
         "rimraf": "^6.0.1"

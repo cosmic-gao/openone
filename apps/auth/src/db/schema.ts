@@ -1,7 +1,7 @@
 import { pgSchema, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 /** Auth APP 专属 PG Schema */
-export const authSchema = pgSchema('auth');
+export const authSchema = pgSchema('1001_auth');
 
 /** 用户表 */
 export const users = authSchema.table('users', {

@@ -1,7 +1,7 @@
 import { pgSchema, text, serial, timestamp, boolean } from 'drizzle-orm/pg-core';
 
 /** Database APP 使用 platform PG Schema */
-export const platformSchema = pgSchema('platform');
+export const platformSchema = pgSchema('1000_platform');
 
 /** Schema注册表（持久化存储已注册的APP Schema信息） */
 export const schemaRegistry = platformSchema.table('schema_registry', {

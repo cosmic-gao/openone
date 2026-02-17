@@ -1,37 +1,11 @@
 # OpenOne - 多APP管理平台
 
-基于微前端架构的"APP工厂"平台，用户可使用 Next.js + Shadcn + TailwindCSS +
-Drizzle 快速构建业务APP，以 ZIP 包形式上传发布。
+OpenOne
+是一个基于微前端架构的多应用管理平台，旨在提供灵活的插件化应用集成能力。用户可使用
+Next.js + Shadcn + TailwindCSS + Drizzle 快速构建业务APP，以 ZIP
+包形式上传发布。
 
-## 架构概览
-
-```
-┌─────────────────────────────────────────────────┐
-│                  用户浏览器                        │
-│    ┌──────────┐     ┌──────────────────────────┐ │
-│    │ auth-app │────▶│       shell-app          │ │
-│    │ :3001    │     │ :3000 (Wujie主框架)       │ │
-│    └──────────┘     │  ┌──────┐ ┌──────┐       │ │
-│                     │  │子APP │ │子APP │ ...    │ │
-│                     │  └──────┘ └──────┘       │ │
-│                     └──────────────────────────┘ │
-└──────────┬──────────────────┬───────────────┬────┘
-           │                  │               │
-    ┌──────▼──────┐  ┌───────▼──────┐ ┌──────▼──────┐
-    │ admin-app   │  │permission-app│ │db-manager-app│
-    │ :3002       │  │ :3003        │ │ :3004        │
-    └─────────────┘  └──────────────┘ └──────────────┘
-                          │                │
-                     ┌────▼────────────────▼────┐
-                     │    PostgreSQL :5432       │
-                     │  ┌─────────┐ ┌─────────┐ │
-                     │  │platform │ │001_xxx  │ │
-                     │  │ schema  │ │ schema  │ │
-                     │  └─────────┘ └─────────┘ │
-                     └──────────────────────────┘
-```
-
-## 快速开始
+## 1. 快速开始
 
 ```bash
 # 1. 安装依赖
@@ -47,39 +21,110 @@ cp .env.example .env
 pnpm dev
 ```
 
-启动后：
+启动后访问：
 
-- **Shell** (入口): http://localhost:3000
-- **登录**: http://localhost:3001 (账号: admin / admin123)
-- **APP管理**: http://localhost:3002
-- **权限管理**: http://localhost:3003
-- **数据库管理**: http://localhost:3004
+- **Shell (入口)**: http://localhost:3000
+- **登录 (Auth)**: http://localhost:3001 (Default: admin / admin123)
+- **APP管理 (Admin)**: http://localhost:3002
+- **权限管理 (Permission)**: http://localhost:3003
+- **数据库管理 (Database)**: http://localhost:3004
 
-## 核心APP
+## 2. 技术栈
 
-| APP        | 端口 | 职责                        |
-| ---------- | ---- | --------------------------- |
-| auth       | 3001 | 用户认证、JWT签发           |
-| shell      | 3000 | Wujie微前端主框架、菜单聚合 |
-| admin      | 3002 | APP上传、发布、版本管理     |
-| permission | 3003 | 权限定义、角色、授权        |
-| database   | 3004 | PG Schema管理、迁移执行     |
+| 领域         | 技术选型    | 版本     | 备注               |
+| :----------- | :---------- | :------- | :----------------- |
+| **运行时**   | Node.js     | >=20.0.0 |                    |
+| **包管理**   | PNPM        | 9.x      | Workspace monorepo |
+| **构建工具** | TurboRepo   | 2.4+     | 增量构建           |
+| **前端框架** | Next.js     | 16.1.6   | App Router         |
+| **UI 库**    | React       | 19.2.4   | Server Components  |
+| **样式**     | TailwindCSS | 4.1.18   |                    |
+| **数据库**   | PostgreSQL  | 14+      |                    |
+| **ORM**      | Drizzle     | 0.45.1   | + Drizzle Kit      |
 
-## 共享包
+## 3. 系统架构
 
-| 包             | 说明                           |
-| -------------- | ------------------------------ |
-| @openone/types | 全平台TypeScript类型定义       |
-| @openone/utils | JWT、HTTP客户端、日志工具      |
-| @openone/db    | PostgreSQL连接工厂、Schema管理 |
+### 3.1 核心设计
 
-## 用户APP开发
+平台采用 **Monorepo** + **微前端** 策略：
 
-1. 复制 `templates/app-template/` 作为起点
-2. 修改 `openone.config.json` 配置APP信息、菜单、权限和数据库
-3. 开发完成后打ZIP包上传到admin-app
+- **模块化**: 核心基础设施固定，业务功能通过 APP 扩展。
+- **独立性**: 每个 APP 拥有独立的数据库 Schema、API 和前端资源。
+- **一致性**: 共享统一的 UI 组件库 (`@openone/ui` 待建设)、工具函数和类型定义。
 
-## 技术栈
+### 3.2 目录结构
 
-Next.js 15 · React 19 · TailwindCSS 4 · Drizzle ORM · PostgreSQL 16 ·
-Wujie微前端 · Zustand · Turbo · pnpm
+```
+openone/
+├── apps/                   # 业务应用（微前端子应用）
+│   ├── admin/              # 管理后台（主应用/基座一部分）
+│   ├── auth/               # 认证服务
+│   ├── permission/         # 权限中心
+│   ├── database/           # 数据库管理服务
+│   └── shell/              # 应用壳（Wujie主框架，负责加载子应用）
+├── packages/               # 共享库
+│   ├── database/           # 数据库连接与核心Schema封装
+│   ├── types/              # 全局类型定义
+│   └── utils/              # 通用工具函数（HTTP, Logger, Auth）
+├── templates/              # 应用模板
+│   └── app-template/       # 标准APP脚手架
+└── scripts/                # 运维脚本
+```
+
+### 3.3 模块依赖
+
+```mermaid
+graph TD
+    subgraph Apps
+        Admin[apps/admin]
+        Auth[apps/auth]
+        Perm[apps/permission]
+        DB_App[apps/database]
+    end
+    
+    subgraph Packages
+        PkgDB[@openone/database]
+        PkgUtils[@openone/utils]
+        PkgTypes[@openone/types]
+    end
+
+    Admin --> PkgDB & PkgUtils
+    Auth --> PkgDB & PkgUtils
+    Perm --> PkgDB & PkgUtils
+    DB_App --> PkgDB & PkgUtils
+    
+    PkgDB --> PkgTypes
+    PkgUtils --> PkgTypes
+```
+
+## 4. 数据库架构
+
+采用 **PostgreSQL Schema Isolation** 模式，实现多租户/多应用的数据隔离。
+
+### 4.1 Schema 策略
+
+- **Platform Schema**: 存储平台级元数据（如 `schema_registry`, `users`
+  基础表）。
+- **App Schema**: 每个 APP 拥有独立的 PG Schema（如 `auth`, `permission`）。
+
+### 4.2 开发流程
+
+1. **定义**: 在 `apps/<app>/src/db/schema.ts` 中使用 `pgSchema('app_name')`。
+2. **生成**: 使用 `drizzle-kit generate` 生成迁移文件。
+3. **同步**: APP 启动时调用 `api/schemas/sync`，Database APP 自动应用变更。
+
+## 5. 核心服务职责
+
+| APP            | 端口 | 职责                                      |
+| :------------- | :--- | :---------------------------------------- |
+| **auth**       | 3001 | 认证中心，管理用户、登录、JWT签发         |
+| **shell**      | 3000 | Wujie主框架，负责菜单聚合、子应用路由调度 |
+| **admin**      | 3002 | APP全生命周期管理（上传、发布、版本控制） |
+| **permission** | 3003 | RBAC权限模型管理（角色、资源授权）        |
+| **database**   | 3004 | 数据库Schema元数据管理、DDL执行引擎       |
+
+## 6. 开发规范
+
+- **命名**: 目录/包名优先单单词（如 `db`, `utils`），API使用 camelCase。
+- **数据库**: 表名使用 snake_case 复数（如 `users`, `roles`）。
+- **版本**: 遵循 Semantic Versioning。

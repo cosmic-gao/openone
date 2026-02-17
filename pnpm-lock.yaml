@@ -17,9 +17,9 @@ importers:
 
   apps/admin:
     dependencies:
-      '@openone/db':
+      '@openone/database':
         specifier: workspace:*
-        version: link:../../packages/db
+        version: link:../../packages/database
       '@openone/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -75,9 +75,9 @@ importers:
 
   apps/auth:
     dependencies:
-      '@openone/db':
+      '@openone/database':
         specifier: workspace:*
-        version: link:../../packages/db
+        version: link:../../packages/database
       '@openone/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -130,9 +130,9 @@ importers:
 
   apps/database:
     dependencies:
-      '@openone/db':
+      '@openone/database':
         specifier: workspace:*
-        version: link:../../packages/db
+        version: link:../../packages/database
       '@openone/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -182,9 +182,9 @@ importers:
 
   apps/permission:
     dependencies:
-      '@openone/db':
+      '@openone/database':
         specifier: workspace:*
-        version: link:../../packages/db
+        version: link:../../packages/database
       '@openone/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -281,7 +281,7 @@ importers:
         specifier: ^5.7.3
         version: 5.9.3
 
-  packages/db:
+  packages/database:
     dependencies:
       drizzle-orm:
         specifier: ^0.45.1
