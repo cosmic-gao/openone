@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 import { schemaRegistry, migrationHistory } from '../../../../db/schema';
 
 const logger = createLogger('db-manager');
-const DB_URL = process.env.DATABASE_URL || 'postgresql://openone:openone_dev@localhost:5432/openone';
+const DB_URL = process.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/openone';
 
 /**
  * 获取数据库客户端

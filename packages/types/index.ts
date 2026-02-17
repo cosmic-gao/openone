@@ -43,3 +43,13 @@ export type {
     PaginatedResponse,
     BusEvents,
 } from './platform';
+
+// 环境变量管理
+export type {
+    EnvOwner,
+    AppEnvConfig,
+    EnvAssignment,
+    PortAssignment,
+    EnvAssignRequest,
+    EnvAssignResponse,
+} from './env';

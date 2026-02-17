@@ -7,3 +7,13 @@ export {
 
 export { createHttpClient } from './http';
 export { createLogger } from './logger';
+
+export {
+    resolveEnvOwner,
+    categorizeEnvVars,
+    generateEnvFile,
+    parseEnvFile,
+    resolveAppPort,
+    resolveAppUrl,
+    mergeEnvAssignment,
+} from './env';

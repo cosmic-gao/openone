@@ -14,10 +14,11 @@ pnpm install
 # 2. 启动数据库
 docker-compose up -d
 
-# 3. 复制环境变量
-cp .env.example .env
+# 3. 初始化各APP环境变量（每个APP独立.env）
+Get-ChildItem apps -Directory | ForEach-Object { Copy-Item "$($_.FullName)/.env.example" "$($_.FullName)/.env" -ErrorAction SilentlyContinue }
+# Linux/Mac: for d in apps/*/; do cp "$d.env.example" "$d.env" 2>/dev/null; done
 
-# 4. 启动所有APP（Turbo并行）
+# 4. 启动所有APP（Turbo并行，端口由各APP .env 的 PORT 控制）
 pnpm dev
 ```
 
@@ -115,13 +116,26 @@ graph TD
 
 ## 5. 核心服务职责
 
-| APP            | 端口 | 职责                                      |
-| :------------- | :--- | :---------------------------------------- |
-| **auth**       | 3001 | 认证中心，管理用户、登录、JWT签发         |
-| **shell**      | 3000 | Wujie主框架，负责菜单聚合、子应用路由调度 |
-| **admin**      | 3002 | APP全生命周期管理（上传、发布、版本控制） |
-| **permission** | 3003 | RBAC权限模型管理（角色、资源授权）        |
-| **database**   | 3004 | 数据库Schema元数据管理、DDL执行引擎       |
+| APP            | 端口 | 职责                                                         | .env 管理范围             |
+| :------------- | :--- | :----------------------------------------------------------- | :------------------------ |
+| **shell**      | 3000 | Wujie主框架，负责菜单聚合、子应用路由调度                    | —                         |
+| **auth**       | 3001 | 认证中心，管理用户、登录、JWT签发                            | —                         |
+| **admin**      | 3002 | APP全生命周期管理（上传、发布、版本控制、**端口/域名分发**） | PORT, APP_URL, 服务地址   |
+| **permission** | 3003 | RBAC权限模型管理（角色、资源授权、**权限配置分发**）         | PERMISSION__, RBAC__      |
+| **database**   | 3004 | 数据库Schema元数据管理、DDL执行引擎、**数据库配置分发**      | DATABASE_URL, SCHEMA_NAME |
+
+### 5.1 环境变量管理
+
+每个 APP 拥有独立的 `.env` 文件，由 Next.js 自动加载。打包后的第三方 APP 的
+`.env` 由三大核心服务分别生成：
+
+```mermaid
+graph LR
+    Admin[Admin APP] -->|端口/域名| EnvFile[.env 文件]
+    Database[Database APP] -->|DATABASE_URL| EnvFile
+    Permission[Permission APP] -->|权限配置| EnvFile
+    EnvFile --> ThirdApp[第三方 APP]
+```
 
 ## 6. 开发规范
 
