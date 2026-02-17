@@ -1,4 +1,5 @@
 import { Shield } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 /**
  * 权限管理首页
@@ -7,7 +8,7 @@ export default function PermissionPage() {
   return (
     <div className="p-6">
       <div className="flex items-center gap-3 mb-6">
-        <Shield size={24} style={{ color: 'var(--color-primary)' }} />
+        <Shield size={24} className="text-primary" />
         <h1 className="text-xl font-semibold">权限管理</h1>
       </div>
 
@@ -20,7 +21,7 @@ export default function PermissionPage() {
   );
 }
 
-/** 仪表盘卡片 */
+/** 仪表盘统计卡片 */
 function DashboardCard({
   title,
   count,
@@ -31,17 +32,16 @@ function DashboardCard({
   description: string;
 }) {
   return (
-    <div
-      className="rounded-xl border p-5"
-      style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-    >
-      <h3 className="text-sm font-medium mb-1" style={{ color: 'var(--color-text-muted)' }}>
-        {title}
-      </h3>
-      <p className="text-2xl font-bold mb-1">{count}</p>
-      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-        {description}
-      </p>
-    </div>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-2xl font-bold mb-1">{count}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
+      </CardContent>
+    </Card>
   );
 }

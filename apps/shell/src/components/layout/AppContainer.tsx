@@ -73,15 +73,12 @@ export function AppContainer() {
   if (!activeApp) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-6">
-        <div
-          className="w-20 h-20 rounded-2xl flex items-center justify-center"
-          style={{ background: 'var(--color-primary-light)' }}
-        >
-          <LayoutGrid size={36} style={{ color: 'var(--color-primary)' }} />
+        <div className="w-20 h-20 rounded-2xl flex items-center justify-center bg-primary/10">
+          <LayoutGrid size={36} className="text-primary" />
         </div>
         <div className="text-center">
           <h3 className="text-lg font-semibold mb-2">欢迎使用 OpenOne</h3>
-          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-sm text-muted-foreground">
             从左侧菜单选择一个APP开始使用
           </p>
         </div>

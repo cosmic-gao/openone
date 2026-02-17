@@ -1,6 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 /** Shell集成APP地址 */
 const SHELL_URL = process.env.NEXT_PUBLIC_SHELL_URL || 'http://localhost:3000';
@@ -57,81 +61,47 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* 用户名 */}
-      <div>
-        <label
-          htmlFor="username"
-          className="block text-sm font-medium mb-2"
-          style={{ color: 'var(--color-text-muted)' }}
-        >
-          用户名
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="username">用户名</Label>
+        <Input
           id="username"
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="请输入用户名"
           autoComplete="username"
-          className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
-          style={{
-            background: 'var(--color-surface)',
-            border: '1px solid var(--color-border)',
-            color: 'var(--color-text)',
-          }}
         />
       </div>
 
       {/* 密码 */}
-      <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium mb-2"
-          style={{ color: 'var(--color-text-muted)' }}
-        >
-          密码
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="password">密码</Label>
+        <Input
           id="password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="请输入密码"
           autoComplete="current-password"
-          className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
-          style={{
-            background: 'var(--color-surface)',
-            border: '1px solid var(--color-border)',
-            color: 'var(--color-text)',
-          }}
         />
       </div>
 
       {/* 错误提示 */}
       {error && (
-        <div
-          className="px-4 py-3 rounded-xl text-sm"
-          style={{
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            color: 'var(--color-error)',
-          }}
-        >
-          {error}
-        </div>
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
       {/* 登录按钮 */}
-      <button
+      <Button
         type="submit"
         disabled={isLoading}
-        className="w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-        style={{
-          background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-          color: '#fff',
-        }}
+        className="w-full bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-500/90"
+        size="lg"
       >
         {isLoading ? '登录中...' : '登 录'}
-      </button>
+      </Button>
     </form>
   );
 }

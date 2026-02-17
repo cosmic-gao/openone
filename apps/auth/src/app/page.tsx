@@ -1,4 +1,11 @@
 import { LoginForm } from '@/components/LoginForm';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 /**
  * 登录页面
@@ -9,43 +16,25 @@ export default function LoginPage() {
     <main className="min-h-screen flex items-center justify-center p-4">
       {/* 背景装饰 */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20 blur-3xl"
-          style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
-        />
-        <div
-          className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full opacity-15 blur-3xl"
-          style={{ background: 'linear-gradient(135deg, #3b82f6, #06b6d4)' }}
-        />
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20 blur-3xl bg-gradient-to-br from-primary to-purple-500" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full opacity-15 blur-3xl bg-gradient-to-br from-blue-500 to-cyan-500" />
       </div>
 
       {/* 登录卡片 */}
       <div className="relative w-full max-w-md">
-        <div
-          className="rounded-2xl border p-8 backdrop-blur-xl shadow-2xl"
-          style={{
-            background: 'rgba(30, 41, 59, 0.8)',
-            borderColor: 'var(--color-border)',
-          }}
-        >
-          {/* Logo & 标题 */}
-          <div className="text-center mb-8">
-            <div
-              className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
-              style={{
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-              }}
-            >
-              <span className="text-2xl font-bold text-white">O</span>
+        <Card className="border-border/50 bg-card/80 backdrop-blur-xl shadow-2xl">
+          <CardHeader className="text-center pb-2">
+            {/* Logo */}
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 mx-auto bg-gradient-to-br from-primary to-purple-500">
+              <span className="text-2xl font-bold text-primary-foreground">O</span>
             </div>
-            <h1 className="text-2xl font-bold mb-2">OpenOne</h1>
-            <p style={{ color: 'var(--color-text-muted)' }}>
-              多APP管理平台
-            </p>
-          </div>
-
-          <LoginForm />
-        </div>
+            <CardTitle className="text-2xl">OpenOne</CardTitle>
+            <CardDescription>多APP管理平台</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <LoginForm />
+          </CardContent>
+        </Card>
       </div>
     </main>
   );

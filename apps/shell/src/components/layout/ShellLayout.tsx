@@ -96,7 +96,7 @@ export function ShellLayout() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-3" style={{ color: 'var(--color-text-muted)' }}>
+        <div className="flex items-center gap-3 text-muted-foreground">
           <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
           正在验证身份...
         </div>
@@ -109,10 +109,7 @@ export function ShellLayout() {
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
-        <main
-          className="flex-1 overflow-auto"
-          style={{ background: 'var(--color-content)' }}
-        >
+        <main className="flex-1 overflow-auto bg-background">
           <AppContainer />
         </main>
       </div>

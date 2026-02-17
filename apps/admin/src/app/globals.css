@@ -1,21 +1,64 @@
 @import "tailwindcss";
 
-:root {
-  --color-primary: #6366f1;
-  --color-bg: #0f172a;
-  --color-surface: #1e293b;
-  --color-surface-hover: #334155;
-  --color-text: #f8fafc;
-  --color-text-muted: #94a3b8;
-  --color-border: #334155;
-  --color-success: #22c55e;
-  --color-error: #ef4444;
+/* === shadcn/ui 主题变量 === */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* === OpenOne 深色 Indigo 主题 === */
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.16 0.015 265);
+  --foreground: oklch(0.985 0.002 247);
+  --card: oklch(0.21 0.02 265);
+  --card-foreground: oklch(0.985 0.002 247);
+  --popover: oklch(0.23 0.02 265);
+  --popover-foreground: oklch(0.985 0.002 247);
+  --primary: oklch(0.55 0.24 277);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.25 0.015 265);
+  --secondary-foreground: oklch(0.985 0.002 247);
+  --muted: oklch(0.25 0.015 265);
+  --muted-foreground: oklch(0.65 0.02 260);
+  --accent: oklch(0.30 0.02 265);
+  --accent-foreground: oklch(0.985 0.002 247);
+  --destructive: oklch(0.58 0.22 29);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.32 0.02 262);
+  --input: oklch(0.32 0.02 262);
+  --ring: oklch(0.55 0.24 277);
+}
+
+/* === 基础样式 === */
+* {
+  border-color: var(--border);
+}
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: var(--color-bg);
-  color: var(--color-text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
 }

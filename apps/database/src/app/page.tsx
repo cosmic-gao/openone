@@ -1,4 +1,5 @@
 import { Database } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 /**
  * 数据库管理首页
@@ -8,7 +9,7 @@ export default function DbManagerPage() {
   return (
     <div className="p-6">
       <div className="flex items-center gap-3 mb-6">
-        <Database size={24} style={{ color: 'var(--color-primary)' }} />
+        <Database size={24} className="text-primary" />
         <h1 className="text-xl font-semibold">数据库管理</h1>
       </div>
 
@@ -19,20 +20,20 @@ export default function DbManagerPage() {
 
       <div className="mt-6">
         <h2 className="text-base font-medium mb-3">Schema 列表</h2>
-        <div
-          className="rounded-xl border p-8 text-center"
-          style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-        >
-          <Database size={36} className="mx-auto mb-3" style={{ color: 'var(--color-text-muted)' }} />
-          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            暂无Schema，上传APP后会自动创建
-          </p>
-        </div>
+        <Card className="py-8">
+          <CardContent className="text-center">
+            <Database size={36} className="mx-auto mb-3 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
+              暂无Schema，上传APP后会自动创建
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
 
+/** 仪表盘统计卡片 */
 function DashboardCard({
   title,
   count,
@@ -43,17 +44,16 @@ function DashboardCard({
   description: string;
 }) {
   return (
-    <div
-      className="rounded-xl border p-5"
-      style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-    >
-      <h3 className="text-sm font-medium mb-1" style={{ color: 'var(--color-text-muted)' }}>
-        {title}
-      </h3>
-      <p className="text-2xl font-bold mb-1">{count}</p>
-      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-        {description}
-      </p>
-    </div>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-2xl font-bold mb-1">{count}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
+      </CardContent>
+    </Card>
   );
 }

@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import type { AppRegistration } from '@openone/types';
-import { Package, Circle } from 'lucide-react';
+import { Package } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
-/** 状态颜色映射 */
-const STATUS_COLORS: Record<string, string> = {
-  draft: '#f59e0b',
-  published: '#22c55e',
-  archived: '#64748b',
+/** 状态标签变体映射 */
+const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+  draft: 'secondary',
+  published: 'default',
+  archived: 'outline',
 };
 
 /** 状态标签映射 */
@@ -45,9 +48,18 @@ export function AppList() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20" style={{ color: 'var(--color-text-muted)' }}>
-        <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-3" />
-        加载中...
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Card key={i}>
+            <CardHeader>
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-4 w-48 mt-2" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-4 w-24" />
+            </CardContent>
+          </Card>
+        ))}
       </div>
     );
   }
@@ -55,8 +67,8 @@ export function AppList() {
   if (apps.length === 0) {
     return (
       <div className="text-center py-20">
-        <Package size={48} className="mx-auto mb-4" style={{ color: 'var(--color-text-muted)' }} />
-        <p style={{ color: 'var(--color-text-muted)' }}>暂无APP，点击上方按钮上传</p>
+        <Package size={48} className="mx-auto mb-4 text-muted-foreground" />
+        <p className="text-muted-foreground">暂无APP，点击上方按钮上传</p>
       </div>
     );
   }
@@ -64,29 +76,26 @@ export function AppList() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {apps.map((app) => (
-        <div
+        <Card
           key={app.appId}
-          className="rounded-xl border p-5 transition-all duration-200"
-          style={{
-            background: 'var(--color-surface)',
-            borderColor: 'var(--color-border)',
-          }}
+          className="transition-colors hover:bg-accent/50 cursor-pointer"
         >
-          <div className="flex items-start justify-between mb-3">
-            <h3 className="font-medium">{app.appName}</h3>
-            <div className="flex items-center gap-1.5 text-xs">
-              <Circle size={8} fill={STATUS_COLORS[app.status]} color={STATUS_COLORS[app.status]} />
-              {STATUS_LABELS[app.status]}
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between">
+              <CardTitle className="text-base">{app.appName}</CardTitle>
+              <Badge variant={STATUS_VARIANT[app.status] || 'secondary'}>
+                {STATUS_LABELS[app.status] || app.status}
+              </Badge>
             </div>
-          </div>
-          <p className="text-sm mb-3" style={{ color: 'var(--color-text-muted)' }}>
-            {app.description || '暂无描述'}
-          </p>
-          <div className="flex items-center justify-between text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            <span>ID: {app.appId}</span>
-            <span>v{app.latestVersion || '0.0.0'}</span>
-          </div>
-        </div>
+            <CardDescription>{app.description || '暂无描述'}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>ID: {app.appId}</span>
+              <span>v{app.latestVersion || '0.0.0'}</span>
+            </div>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );

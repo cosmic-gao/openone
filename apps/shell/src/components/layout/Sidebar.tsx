@@ -10,6 +10,15 @@ import {
   ChevronRight,
   type LucideIcon,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 /** 图标名称到Lucide组件的映射 */
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -35,84 +44,85 @@ export function Sidebar() {
 
   return (
     <aside
-      className="flex flex-col h-full border-r transition-all duration-300"
-      style={{
-        width: isSidebarCollapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)',
-        background: 'var(--color-sidebar)',
-        borderColor: 'var(--color-border)',
-      }}
+      className={cn(
+        'flex flex-col h-full border-r border-border bg-sidebar text-sidebar-foreground transition-all duration-300',
+        isSidebarCollapsed ? 'w-16' : 'w-[260px]'
+      )}
     >
       {/* Logo区域 */}
-      <div
-        className="flex items-center gap-3 px-4 border-b shrink-0"
-        style={{
-          height: 'var(--header-height)',
-          borderColor: 'var(--color-border)',
-        }}
-      >
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-          style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
-        >
-          <span className="text-sm font-bold text-white">O</span>
+      <div className="flex items-center gap-3 px-4 h-14 shrink-0">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-gradient-to-br from-primary to-purple-500">
+          <span className="text-sm font-bold text-primary-foreground">O</span>
         </div>
         {!isSidebarCollapsed && (
           <span className="text-base font-semibold whitespace-nowrap">OpenOne</span>
         )}
       </div>
 
+      <Separator />
+
       {/* 菜单区域 */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2">
-        {registeredApps.map((app) => (
-          <div key={app.appId} className="mb-3">
-            {/* APP分组标题 */}
-            {!isSidebarCollapsed && (
-              <div
-                className="px-3 py-1.5 text-xs font-medium uppercase tracking-wider"
-                style={{ color: 'var(--color-text-dim)' }}
-              >
-                {app.appName}
-              </div>
-            )}
+      <ScrollArea className="flex-1">
+        <nav className="py-3 px-2">
+          {registeredApps.map((app) => (
+            <div key={app.appId} className="mb-3">
+              {/* APP分组标题 */}
+              {!isSidebarCollapsed && (
+                <div className="px-3 py-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  {app.appName}
+                </div>
+              )}
 
-            {/* 菜单项 */}
-            {app.menus.map((menu) => {
-              const isActive = activeAppId === app.appId && activeMenuKey === menu.key;
-              const IconComponent = menu.icon ? ICON_MAP[menu.icon] : LayoutGrid;
+              {/* 菜单项 */}
+              {app.menus.map((menu) => {
+                const isActive = activeAppId === app.appId && activeMenuKey === menu.key;
+                const IconComponent = menu.icon ? ICON_MAP[menu.icon] : LayoutGrid;
 
-              return (
-                <button
-                  key={menu.key}
-                  onClick={() => setActiveApp(app.appId, menu.key)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer"
-                  style={{
-                    background: isActive ? 'var(--color-primary-light)' : 'transparent',
-                    color: isActive ? 'var(--color-primary)' : 'var(--color-text-muted)',
-                  }}
-                  title={isSidebarCollapsed ? menu.label : undefined}
-                >
-                  {IconComponent && <IconComponent size={18} className="shrink-0" />}
-                  {!isSidebarCollapsed && <span>{menu.label}</span>}
-                </button>
-              );
-            })}
-          </div>
-        ))}
-      </nav>
+                const menuButton = (
+                  <button
+                    key={menu.key}
+                    onClick={() => setActiveApp(app.appId, menu.key)}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors cursor-pointer',
+                      isActive
+                        ? 'bg-sidebar-accent text-sidebar-primary font-medium'
+                        : 'text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+                    )}
+                  >
+                    {IconComponent && <IconComponent size={18} className="shrink-0" />}
+                    {!isSidebarCollapsed && <span>{menu.label}</span>}
+                  </button>
+                );
+
+                // 折叠时用 Tooltip 显示菜单名
+                if (isSidebarCollapsed) {
+                  return (
+                    <Tooltip key={menu.key}>
+                      <TooltipTrigger asChild>{menuButton}</TooltipTrigger>
+                      <TooltipContent side="right">{menu.label}</TooltipContent>
+                    </Tooltip>
+                  );
+                }
+
+                return menuButton;
+              })}
+            </div>
+          ))}
+        </nav>
+      </ScrollArea>
+
+      <Separator />
 
       {/* 折叠按钮 */}
-      <div
-        className="flex items-center justify-center py-3 border-t shrink-0"
-        style={{ borderColor: 'var(--color-border)' }}
-      >
-        <button
+      <div className="flex items-center justify-center py-3 shrink-0">
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggleSidebar}
-          className="p-2 rounded-lg transition-colors cursor-pointer"
-          style={{ color: 'var(--color-text-muted)' }}
-          title={isSidebarCollapsed ? '展开侧边栏' : '收起侧边栏'}
+          className="text-muted-foreground hover:text-foreground"
         >
           {isSidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-        </button>
+        </Button>
       </div>
     </aside>
   );

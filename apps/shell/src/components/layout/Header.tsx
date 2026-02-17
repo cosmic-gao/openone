@@ -2,6 +2,14 @@
 
 import { useShellStore } from '@/stores/shellStore';
 import { LogOut, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_URL || 'http://localhost:3001';
 
@@ -23,14 +31,7 @@ export function Header() {
   }
 
   return (
-    <header
-      className="flex items-center justify-between px-6 border-b shrink-0 backdrop-blur-md"
-      style={{
-        height: 'var(--header-height)',
-        background: 'var(--color-header)',
-        borderColor: 'var(--color-border)',
-      }}
-    >
+    <header className="flex items-center justify-between px-6 h-14 border-b border-border bg-background/85 backdrop-blur-md shrink-0">
       {/* 左侧：当前APP名称 */}
       <div className="flex items-center gap-2">
         <h2 className="text-sm font-medium">
@@ -39,29 +40,33 @@ export function Header() {
       </div>
 
       {/* 右侧：用户信息 */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {user && (
           <div className="flex items-center gap-2">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center"
-              style={{ background: 'var(--color-surface-hover)' }}
-            >
-              <User size={14} style={{ color: 'var(--color-text-muted)' }} />
-            </div>
-            <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-              {user.username}
-            </span>
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+                {user.username.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm text-muted-foreground">{user.username}</span>
           </div>
         )}
 
-        <button
-          onClick={handleLogout}
-          className="p-2 rounded-lg transition-colors cursor-pointer"
-          style={{ color: 'var(--color-text-dim)' }}
-          title="退出登录"
-        >
-          <LogOut size={16} />
-        </button>
+        <Separator orientation="vertical" className="h-5" />
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLogout}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <LogOut size={16} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>退出登录</TooltipContent>
+        </Tooltip>
       </div>
     </header>
   );
