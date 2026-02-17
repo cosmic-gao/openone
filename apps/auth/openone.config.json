@@ -5,12 +5,12 @@
     "menus": [],
     "permissions": [
         {
-            "code": "auth:user:create",
+            "code": "user:create",
             "name": "创建用户",
             "description": "允许创建新用户账号"
         },
         {
-            "code": "auth:user:manage",
+            "code": "user:manage",
             "name": "用户管理",
             "description": "允许管理用户账号（启用/禁用等）"
         }

@@ -35,7 +35,7 @@ export interface MenuItem {
 
 /** 权限声明 */
 export interface PermissionDefinition {
-    /** 权限Code（如 order:read） */
+    /** 权限Code，资源级标识（不含appId前缀，如 schema:read），sync时由系统自动拼接为 {appId}:{code} */
     code: string;
     /** 权限名称 */
     name: string;

@@ -12,12 +12,12 @@
     ],
     "permissions": [
         {
-            "code": "database:schema:read",
+            "code": "schema:read",
             "name": "查看Schema",
             "description": "允许查看数据库Schema列表"
         },
         {
-            "code": "database:schema:migrate",
+            "code": "schema:migrate",
             "name": "执行迁移",
             "description": "允许执行数据库Schema迁移"
         }

@@ -10,6 +10,8 @@ export interface UserInfo {
     avatar?: string;
     /** 角色列表 */
     roles: string[];
+    /** 权限Code列表 */
+    permissions: string[];
 }
 
 /** JWT Token载荷 */
@@ -20,6 +22,8 @@ export interface TokenPayload {
     username: string;
     /** 角色列表 */
     roles: string[];
+    /** 权限Code列表 */
+    permissions: string[];
     /** 签发时间 */
     iat: number;
     /** 过期时间 */

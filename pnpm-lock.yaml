@@ -396,6 +396,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.8
         version: 9.0.10
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       rimraf:
         specifier: ^6.0.1
         version: 6.1.2

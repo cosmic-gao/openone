@@ -55,3 +55,21 @@ export interface PermissionCheckResponse {
     /** 是否有权限 */
     hasPermission: boolean;
 }
+
+/** 用户角色分配请求 */
+export interface UserRoleAssignRequest {
+    /** 用户ID */
+    userId: string;
+    /** 角色ID列表（全量替换） */
+    roleIds: string[];
+}
+
+/** 用户权限聚合响应 */
+export interface UserPermissionsResponse {
+    /** 用户ID */
+    userId: string;
+    /** 角色名称列表 */
+    roles: string[];
+    /** 权限Code列表（已去重） */
+    permissions: string[];
+}

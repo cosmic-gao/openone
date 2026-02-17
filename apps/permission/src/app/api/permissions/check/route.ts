@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, PermissionCheckRequest, PermissionCheckResponse } from '@openone/types';
+import { dbClient } from '@openone/database';
+import { userRoles, rolePermissions, permissions, roles } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
+import { createLogger } from '@openone/utils';
+
+const logger = createLogger('permission-app');
 
 /**
  * POST /api/permissions/check
@@ -19,13 +25,33 @@ export async function POST(
             );
         }
 
-        // TODO: 从数据库查询用户角色→角色权限→匹配权限Code
-        // 当前开发阶段默认全部放行
+        const db = dbClient(process.env.DATABASE_URL!);
+
+        // 查询用户是否有该权限
+        // 链路: user_roles -> roles -> role_permissions -> permissions
+        // 优化查询：直接查是否存在满足条件的记录
+        const result = await db
+            .select({ code: permissions.code })
+            .from(userRoles)
+            .innerJoin(roles, eq(userRoles.roleId, roles.id))
+            .innerJoin(rolePermissions, eq(roles.id, rolePermissions.roleId))
+            .innerJoin(permissions, eq(rolePermissions.permissionId, permissions.id))
+            .where(
+                and(
+                    eq(userRoles.userId, userId),
+                    eq(permissions.code, permissionCode)
+                )
+            )
+            .limit(1);
+
+        const hasPermission = result.length > 0;
+
         return NextResponse.json({
             success: true,
-            data: { hasPermission: true },
+            data: { hasPermission },
         });
-    } catch {
+    } catch (err) {
+        logger.error('权限校验失败', err);
         return NextResponse.json(
             { success: false, error: '权限校验失败' },
             { status: 500 }
