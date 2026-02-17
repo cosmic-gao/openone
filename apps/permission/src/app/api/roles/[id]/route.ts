@@ -13,10 +13,10 @@ const logger = createLogger('permission-app');
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ApiResponse<Role>>> {
     try {
-        const { id } = params;
+        const { id } = await context.params;
         const db = dbClient(process.env.DATABASE_URL!);
 
         const [role] = await db.select().from(roles).where(eq(roles.id, id));
@@ -32,8 +32,8 @@ export async function GET(
         const permissions = await db
             .select({ code: permissionsTable.code })
             .from(rolePermissions)
-            .innerJoin(permissionsTable, eq(rolePermissions.permissionId, permissionsTable.id))
-            .where(eq(rolePermissions.roleId, id));
+            .innerJoin(permissionsTable, eq(rolePermissions.permission, permissionsTable.id))
+            .where(eq(rolePermissions.role, id));
 
         const roleData = {
             ...role,
@@ -60,10 +60,10 @@ export async function GET(
  */
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ApiResponse<Role>>> {
     try {
-        const { id } = params;
+        const { id } = await context.params;
         const body = await request.json();
         const { name, description, permissionIds } = body;
 
@@ -88,13 +88,13 @@ export async function PUT(
             // 2. 更新权限关联（如果有传 permissionIds）
             if (permissionIds && Array.isArray(permissionIds)) {
                 // 删除旧关联
-                await tx.delete(rolePermissions).where(eq(rolePermissions.roleId, id));
+                await tx.delete(rolePermissions).where(eq(rolePermissions.role, id));
 
                 // 插入新关联
                 if (permissionIds.length > 0) {
                     const relations = permissionIds.map(pid => ({
-                        roleId: id,
-                        permissionId: pid
+                        role: id,
+                        permission: pid
                     }));
                     await tx.insert(rolePermissions).values(relations);
                 }
@@ -129,10 +129,10 @@ export async function PUT(
  */
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ApiResponse<{ deleted: boolean }>>> {
     try {
-        const { id } = params;
+        const { id } = await context.params;
         const db = dbClient(process.env.DATABASE_URL!);
 
         // 由于设置了 ON DELETE CASCADE，直接删除角色即可

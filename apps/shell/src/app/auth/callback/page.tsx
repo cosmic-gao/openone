@@ -26,6 +26,7 @@ export default function AuthCallbackPage() {
             id: payload.sub,
             username: payload.username,
             roles: payload.roles,
+            permissions: payload.permissions,
             email: '',
           },
           accessToken,

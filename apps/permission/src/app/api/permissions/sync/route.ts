@@ -16,11 +16,11 @@ export async function POST(
 ): Promise<NextResponse<ApiResponse<{ synced: number }>>> {
     try {
         const body: PermissionSyncRequest = await request.json();
-        const { appId, appName, permissions } = body;
+        const { app, appName, permissions } = body;
 
-        if (!appId || !permissions?.length) {
+        if (!app || !permissions?.length) {
             return NextResponse.json(
-                { success: false, error: 'appId和permissions不能为空' },
+                { success: false, error: 'app和permissions不能为空' },
                 { status: 400 }
             );
         }
@@ -28,15 +28,15 @@ export async function POST(
         const db = dbClient(process.env.DATABASE_URL!);
 
         // 1. 删除该APP下的旧权限
-        await db.delete(permissionsTable).where(eq(permissionsTable.appId, appId));
+        await db.delete(permissionsTable).where(eq(permissionsTable.app, app));
 
         // 2. 插入新权限
         const newPermissions = permissions.map((p) => ({
-            appId,
-            // 确保code格式为 {appId}:{code}，避免重复拼接
-            code: p.code.includes(':') && p.code.startsWith(`${appId}:`)
+            app,
+            // 确保code格式为 {app}:{code}，避免重复拼接
+            code: p.code.includes(':') && p.code.startsWith(`${app}:`)
                 ? p.code
-                : `${appId}:${p.code}`,
+                : `${app}:${p.code}`,
             name: p.name,
             description: p.description,
         }));
@@ -46,7 +46,7 @@ export async function POST(
         }
 
         logger.info('权限同步完成', {
-            appId,
+            app,
             appName,
             count: newPermissions.length,
         });

@@ -1,0 +1,41 @@
+
+> openone@ typecheck E:\openone
+> turbo typecheck
+
+鈥?Packages in scope: @openapp/admin, @openapp/auth, @openapp/database, @openapp/permission, @openapp/shell, @openone/database, @openone/types, @openone/utils, my-app
+鈥?Running typecheck in 9 packages
+鈥?Remote caching disabled
+@openapp/admin:typecheck: cache hit, replaying logs e764836fb0277764
+@openapp/shell:typecheck: cache hit, replaying logs 1fa215b414d87349
+@openapp/shell:typecheck: 
+@openapp/shell:typecheck: > @openapp/shell@0.1.0 typecheck E:\openone\apps\shell
+@openapp/shell:typecheck: > tsc --noEmit
+@openapp/shell:typecheck: 
+@openapp/permission:typecheck: cache miss, executing 62c8a3c3edeac57d
+@openapp/admin:typecheck: 
+@openapp/admin:typecheck: > @openapp/admin@0.1.0 typecheck E:\openone\apps\admin
+@openapp/admin:typecheck: > tsc --noEmit
+@openapp/admin:typecheck: 
+@openapp/database:typecheck: cache miss, executing cb25ea4488c655e4
+@openapp/auth:typecheck: cache miss, executing 97482602438213bc
+@openapp/database:typecheck: 
+@openapp/database:typecheck: > @openapp/database@0.1.0 typecheck E:\openone\apps\database
+@openapp/database:typecheck: > tsc --noEmit
+@openapp/database:typecheck: 
+@openapp/auth:typecheck: 
+@openapp/auth:typecheck: > @openapp/auth@0.1.0 typecheck E:\openone\apps\auth
+@openapp/auth:typecheck: > tsc --noEmit
+@openapp/auth:typecheck: 
+@openapp/permission:typecheck: 
+@openapp/permission:typecheck: > @openapp/permission@0.1.0 typecheck E:\openone\apps\permission
+@openapp/permission:typecheck: > tsc --noEmit
+@openapp/permission:typecheck: 
+@openapp/auth:typecheck: src/app/api/login/route.ts(55,69): error TS2551: Property 'passwordHash' does not exist on type '{ id: string; username: string; email: string; password: string; remark: string | null; createdBy: string | null; updatedBy: string | null; createdAt: Date; updatedAt: Date; }'. Did you mean 'password'?
+@openapp/auth:typecheck: 鈥塃LIFECYCLE鈥?Command failed with exit code 2.
+
+ Tasks:    2 successful, 5 total
+Cached:    2 cached, 5 total
+  Time:    5.349s 
+Failed:    @openapp/auth#typecheck
+
+鈥塃LIFECYCLE鈥?Command failed with exit code 2.

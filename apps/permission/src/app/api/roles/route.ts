@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, Role, Permission } from '@openone/types';
 import { dbClient } from '@openone/database';
 import { roles, permissions as permissionsTable, rolePermissions } from '@/db/schema';
-import { createLogger } from '@openone/utils';
+import { createLogger, withAuth } from '@openone/utils';
 import { eq, inArray } from 'drizzle-orm';
 
 const logger = createLogger('permission-app');
@@ -11,8 +11,15 @@ const logger = createLogger('permission-app');
  * GET /api/roles
  * 获取所有角色列表（含权限列表）
  */
-export async function GET(): Promise<NextResponse<ApiResponse<Role[]>>> {
+export async function GET(request: NextRequest): Promise<NextResponse<ApiResponse<Role[]>>> {
     try {
+        if (!withAuth(request)) {
+            return NextResponse.json(
+                { success: false, error: '未授权访问' },
+                { status: 401 }
+            );
+        }
+
         const db = dbClient(process.env.DATABASE_URL!);
 
         // 查询所有角色
@@ -29,12 +36,12 @@ export async function GET(): Promise<NextResponse<ApiResponse<Role[]>>> {
             // 查询所有关联
             const relations = await db
                 .select({
-                    roleId: rolePermissions.roleId,
+                    roleId: rolePermissions.role,
                     permissionCode: permissionsTable.code
                 })
                 .from(rolePermissions)
-                .innerJoin(permissionsTable, eq(rolePermissions.permissionId, permissionsTable.id))
-                .where(inArray(rolePermissions.roleId, roleIds));
+                .innerJoin(permissionsTable, eq(rolePermissions.permission, permissionsTable.id))
+                .where(inArray(rolePermissions.role, roleIds));
 
             // 组装数据
             const relationMap = new Map<string, string[]>();
@@ -82,6 +89,14 @@ export async function POST(
     request: NextRequest
 ): Promise<NextResponse<ApiResponse<Role>>> {
     try {
+        // 需要 "role:manage"
+        if (!withAuth(request, 'permission:role:manage')) {
+            return NextResponse.json(
+                { success: false, error: '权限不足：需要 permission:role:manage' },
+                { status: 403 }
+            );
+        }
+
         const body = await request.json();
         const { name, description, permissionIds } = body;
 
@@ -102,11 +117,13 @@ export async function POST(
                 .values({ name, description })
                 .returning();
 
+            if (!role) throw new Error('ROLE_CREATION_FAILED');
+
             // 2. 关联权限
             if (permissionIds && Array.isArray(permissionIds) && permissionIds.length > 0) {
                 const relations = permissionIds.map(pid => ({
-                    roleId: role.id,
-                    permissionId: pid
+                    role: role.id,
+                    permission: pid
                 }));
                 await tx.insert(rolePermissions).values(relations);
             }

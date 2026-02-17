@@ -24,6 +24,7 @@ export function generateAccessToken(
         sub: user.id,
         username: user.username,
         roles: user.roles,
+        permissions: user.permissions,
     };
     return jwt.sign(payload, secret, { expiresIn: expiresIn as any });
 }

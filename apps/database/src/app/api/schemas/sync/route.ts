@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, SchemaSyncRequest, SchemaSyncResult, SchemaInfo } from '@openone/types';
 import { dbClient, addSchema, runSql } from '@openone/database';
-import { createLogger } from '@openone/utils';
+import { createLogger, withAuth } from '@openone/utils';
 import { eq } from 'drizzle-orm';
 import { schemaRegistry, migrationHistory } from '../../../../db/schema';
 
@@ -26,52 +26,60 @@ export async function POST(
     request: NextRequest
 ): Promise<NextResponse<ApiResponse<SchemaSyncResult>>> {
     try {
-        const body: SchemaSyncRequest = await request.json();
-        const { appId, appName, schemaName, migrations } = body;
-
-        if (!appId || !schemaName) {
+        // 鉴权
+        if (!withAuth(request)) {
             return NextResponse.json(
-                { success: false, error: 'appId和schemaName不能为空' },
+                { success: false, error: '未授权访问' },
+                { status: 401 }
+            );
+        }
+
+        const body: SchemaSyncRequest = await request.json();
+        const { app, appName, name, migrations } = body;
+
+        if (!app || !name) {
+            return NextResponse.json(
+                { success: false, error: 'app和name不能为空' },
                 { status: 400 }
             );
         }
 
         const db = getDb();
-        logger.info('开始同步Schema', { appId, schemaName });
+        logger.info('开始同步Schema', { app, name });
 
         // 1. Check registry
         const existing = await db
             .select()
             .from(schemaRegistry)
-            .where(eq(schemaRegistry.appId, appId))
+            .where(eq(schemaRegistry.app, app))
             .limit(1);
 
         if (existing.length > 0) {
             await db
                 .update(schemaRegistry)
                 .set({ status: 'migrating', updatedAt: new Date() })
-                .where(eq(schemaRegistry.appId, appId));
+                .where(eq(schemaRegistry.app, app));
         } else {
             await db.insert(schemaRegistry).values({
-                appId,
-                schemaName,
+                app,
+                name,
                 status: 'creating',
             });
         }
 
         // 2. Create Schema
         try {
-            await addSchema(DB_URL!, schemaName);
-            logger.info('PG Schema创建完成', { schemaName });
+            await addSchema(DB_URL!, name);
+            logger.info('PG Schema创建完成', { name });
         } catch (err) {
             logger.error('PG Schema创建失败', err);
             await db
                 .update(schemaRegistry)
                 .set({ status: 'archived', updatedAt: new Date() })
-                .where(eq(schemaRegistry.appId, appId));
+                .where(eq(schemaRegistry.app, app));
             return NextResponse.json({
                 success: true,
-                data: { schemaName, status: 'failed', error: 'PG Schema创建失败' },
+                data: { name, status: 'failed', error: 'PG Schema创建失败' },
             });
         }
 
@@ -80,7 +88,7 @@ export async function POST(
             const hasRun = await db
                 .select({ filename: migrationHistory.filename })
                 .from(migrationHistory)
-                .where(eq(migrationHistory.appId, appId));
+                .where(eq(migrationHistory.app, app));
 
             const runSet = new Set(hasRun.map((m) => m.filename));
 
@@ -90,9 +98,9 @@ export async function POST(
                 }
 
                 try {
-                    await runSql(DB_URL!, schemaName, item.content);
+                    await runSql(DB_URL!, name, item.content);
                     await db.insert(migrationHistory).values({
-                        appId,
+                        app,
                         filename: item.filename,
                         success: true,
                     });
@@ -100,7 +108,7 @@ export async function POST(
                 } catch (err) {
                     const msg = err instanceof Error ? err.message : String(err);
                     await db.insert(migrationHistory).values({
-                        appId,
+                        app,
                         filename: item.filename,
                         success: false,
                         error: msg,
@@ -114,11 +122,11 @@ export async function POST(
         await db
             .update(schemaRegistry)
             .set({ status: 'active', updatedAt: new Date() })
-            .where(eq(schemaRegistry.appId, appId));
+            .where(eq(schemaRegistry.app, app));
 
         return NextResponse.json({
             success: true,
-            data: { schemaName, status: 'success' },
+            data: { name, status: 'success' },
         });
     } catch (err) {
         logger.error('Schema同步失败', err);
@@ -132,15 +140,23 @@ export async function POST(
 /**
  * GET /api/schemas/sync
  */
-export async function GET(): Promise<NextResponse<ApiResponse<SchemaInfo[]>>> {
+export async function GET(request: NextRequest): Promise<NextResponse<ApiResponse<SchemaInfo[]>>> {
     try {
+        // 鉴权
+        if (!withAuth(request)) {
+            return NextResponse.json(
+                { success: false, error: '未授权访问' },
+                { status: 401 }
+            );
+        }
+
         const db = getDb();
         const list = await db.select().from(schemaRegistry);
 
         const result: SchemaInfo[] = list.map((s) => ({
             id: s.id,
-            appId: s.appId,
-            schemaName: s.schemaName,
+            app: s.app,
+            name: s.name,
             status: s.status as SchemaInfo['status'],
             createdAt: s.createdAt,
             updatedAt: s.updatedAt,

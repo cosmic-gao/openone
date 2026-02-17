@@ -31,17 +31,17 @@ export async function GET(
         const userRoleList = await db
             .select({ name: roles.name })
             .from(userRoles)
-            .innerJoin(roles, eq(userRoles.roleId, roles.id))
-            .where(eq(userRoles.userId, userId));
+            .innerJoin(roles, eq(userRoles.role, roles.id))
+            .where(eq(userRoles.user, userId));
 
         // 查询用户权限
         const userPermList = await db
             .select({ code: permissions.code })
             .from(userRoles)
-            .innerJoin(roles, eq(userRoles.roleId, roles.id))
-            .innerJoin(rolePermissions, eq(roles.id, rolePermissions.roleId))
-            .innerJoin(permissions, eq(rolePermissions.permissionId, permissions.id))
-            .where(eq(userRoles.userId, userId));
+            .innerJoin(roles, eq(userRoles.role, roles.id))
+            .innerJoin(rolePermissions, eq(roles.id, rolePermissions.role))
+            .innerJoin(permissions, eq(rolePermissions.permission, permissions.id))
+            .where(eq(userRoles.user, userId));
 
         // 去重权限code
         const uniquePerms = Array.from(new Set(userPermList.map(p => p.code)));

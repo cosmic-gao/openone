@@ -6,6 +6,7 @@ import {
     resolveAppPort,
     resolveAppUrl,
     resolveSchema,
+    withAuth,
 } from '@openone/utils';
 import fs from 'fs/promises';
 import path from 'path';
@@ -29,6 +30,16 @@ export async function POST(
     request: NextRequest
 ): Promise<NextResponse<ApiResponse<{ appId: string; version: string }>>> {
     try {
+        // 鉴权：需要登录
+        const user = withAuth(request);
+        if (!user) {
+            return NextResponse.json(
+                { success: false, error: '未授权访问' },
+                { status: 401 }
+            );
+        }
+        // TODO: 进一步检查是否有 admin 权限，例如 user.permissions.includes('app:upload')
+
         const formData = await request.formData();
         const file = formData.get('file') as File;
 
@@ -65,7 +76,7 @@ export async function POST(
         }
 
         const { appId, appName, version, permissions, database, menus } = appConfig;
-        logger.info('开始处理APP上传', { appId, version });
+        logger.info('开始处理APP上传', { appId, version, operator: user.username });
 
         // 4. 解压到存储目录
         const appDir = path.join(STORAGE_PATH, appId, version);

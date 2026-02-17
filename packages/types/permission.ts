@@ -1,17 +1,26 @@
 /** 权限定义（存储在数据库中的完整模型） */
+/** 权限定义（存储在数据库中的完整模型） */
 export interface Permission {
     /** 权限ID */
     id: string;
-    /** 所属APP ID */
-    appId: string;
+    /** 所属APP */
+    app: string;
     /** 权限Code（如 order:read） */
     code: string;
     /** 权限名称 */
     name: string;
     /** 权限描述 */
     description?: string;
+    /** 备注 */
+    remark?: string;
+    /** 创建人 */
+    createdBy?: string;
+    /** 更新人 */
+    updatedBy?: string;
     /** 创建时间 */
     createdAt: Date;
+    /** 更新时间 */
+    updatedAt: Date;
 }
 
 /** 角色定义 */
@@ -24,14 +33,22 @@ export interface Role {
     description?: string;
     /** 角色拥有的权限Code列表 */
     permissions: string[];
+    /** 备注 */
+    remark?: string;
+    /** 创建人 */
+    createdBy?: string;
+    /** 更新人 */
+    updatedBy?: string;
     /** 创建时间 */
     createdAt: Date;
+    /** 更新时间 */
+    updatedAt: Date;
 }
 
 /** 权限同步请求 */
 export interface PermissionSyncRequest {
     /** APP唯一标识 */
-    appId: string;
+    app: string;
     /** APP名称 */
     appName: string;
     /** 权限定义列表（全量替换） */

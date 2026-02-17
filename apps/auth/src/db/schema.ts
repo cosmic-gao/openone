@@ -8,7 +8,11 @@ export const authSchema = pgSchema(schemaName);
 export const users = authSchema.table('users', {
     id: uuid('id').primaryKey().defaultRandom(),
     username: text('username').notNull().unique(),
-    passwordHash: text('password_hash').notNull(),
+    email: text('email').notNull(),
+    password: text('password').notNull(),
+    remark: text('remark'),
+    createdBy: text('created_by'),
+    updatedBy: text('updated_by'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -16,8 +20,11 @@ export const users = authSchema.table('users', {
 /** 刷新Token表 */
 export const refreshTokens = authSchema.table('refresh_tokens', {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id').references(() => users.id).notNull(),
+    user: uuid('user_id').references(() => users.id).notNull(),
     token: text('token').notNull().unique(),
-    expiresAt: timestamp('expires_at').notNull(),
+    expire: timestamp('expire_at').notNull(),
+    createdBy: text('created_by'),
+    updatedBy: text('updated_by'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

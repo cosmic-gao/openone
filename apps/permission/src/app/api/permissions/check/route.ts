@@ -33,12 +33,12 @@ export async function POST(
         const result = await db
             .select({ code: permissions.code })
             .from(userRoles)
-            .innerJoin(roles, eq(userRoles.roleId, roles.id))
-            .innerJoin(rolePermissions, eq(roles.id, rolePermissions.roleId))
-            .innerJoin(permissions, eq(rolePermissions.permissionId, permissions.id))
+            .innerJoin(roles, eq(userRoles.role, roles.id))
+            .innerJoin(rolePermissions, eq(roles.id, rolePermissions.role))
+            .innerJoin(permissions, eq(rolePermissions.permission, permissions.id))
             .where(
                 and(
-                    eq(userRoles.userId, userId),
+                    eq(userRoles.user, userId),
                     eq(permissions.code, permissionCode)
                 )
             )

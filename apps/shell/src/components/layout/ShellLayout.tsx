@@ -19,7 +19,7 @@ export function ShellLayout() {
   const { isAuthenticated, setAuth, setRegisteredApps } = useShellStore();
 
   useEffect(() => {
-    // 从URL参数中提取Token（登录回调）
+    // 1. 优先处理 URL 参数中的 Token（登录回调）
     const params = new URLSearchParams(window.location.search);
     const accessToken = params.get('accessToken');
     const refreshToken = params.get('refreshToken');
@@ -32,19 +32,43 @@ export function ShellLayout() {
             id: payload.sub,
             username: payload.username,
             roles: payload.roles,
+            permissions: payload.permissions,
             email: '',
           },
           accessToken,
           refreshToken
         );
-        // 清除URL参数
+        // 清除URL参数，保持地址栏干净
         window.history.replaceState({}, '', '/');
+        return; // 登录成功，结束本次 check
       }
     }
 
-    if (!accessToken && !useShellStore.getState().isAuthenticated) {
-      // 未登录，重定向到登录页
-      window.location.href = AUTH_URL;
+    // 2. 检查当前 Store 中的 Token 是否有效
+    const currentToken = useShellStore.getState().accessToken;
+    if (currentToken) {
+        const payload = verifyToken(currentToken, JWT_SECRET);
+        if (!payload) {
+            // Token 无效或过期，清除状态并重定向
+            useShellStore.getState().clearAuth();
+            window.location.replace(AUTH_URL);
+            return;
+        }
+        // Token 有效，不做操作
+        if (!useShellStore.getState().isAuthenticated) {
+             // 边界情况：有 Token 但 isAuthenticated 为 false，恢复状态（通常 setAuth 会同时设置 true）
+             // 这里逻辑上应该不需要，因为 verifyToken 成功意味着我们可以从 Token 恢复用户信息
+             // 但由于 setAuth 需要用户信息，这里如果只存了 Token 可能不够，
+             // 实际上 useShellStore 应该持久化用户信息。
+             // 简化处理：如果 Store 里有 Token 但没用户信息，强制重新登录
+             window.location.replace(AUTH_URL);
+        }
+        return;
+    }
+
+    // 3. 无 Token，重定向到登录页
+    if (!accessToken && !currentToken) {
+      window.location.replace(AUTH_URL);
     }
   }, [setAuth]);
 

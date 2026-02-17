@@ -21,6 +21,8 @@ export type {
     PermissionSyncRequest,
     PermissionCheckRequest,
     PermissionCheckResponse,
+    UserRoleAssignRequest,
+    UserPermissionsResponse,
 } from './permission';
 
 // 数据库相关

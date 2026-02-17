@@ -52,7 +52,7 @@ export async function POST(
         }
 
         // 2. 校验密码
-        const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+        const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return NextResponse.json(
                 { success: false, error: '用户名或密码错误', code: 'AUTH_FAILED' },
@@ -88,7 +88,7 @@ export async function POST(
         const userInfo: UserInfo = {
             id: user.id,
             username: user.username,
-            email: user.email || '', // 处理 email 可能不存在的情况（视 schema 定义）
+            email: user.email,
             roles,
             permissions,
         };
