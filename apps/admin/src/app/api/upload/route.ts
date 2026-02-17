@@ -16,7 +16,8 @@ const PORT_RANGE_END = parseInt(process.env.APP_PORT_RANGE_END || '4999', 10);
 /**
  * POST /api/upload
  * 处理APP ZIP包上传
- * 流程：接收文件 → 解压 → 校验配置 → 分发.env → 同步权限 → 同步Schema → 注册APP
+ * APP的ZIP包中不包含.env（.env仅用于本地开发），发布后由Admin APP统一生成
+ * 流程：接收文件 → 解压 → 校验配置 → 生成.env → 同步权限 → 同步Schema → 注册APP
  */
 export async function POST(
     request: NextRequest
@@ -66,7 +67,7 @@ export async function POST(
         zip.extractAllTo(appDir, true);
         logger.info('文件解压完成', { appDir });
 
-        // 5. 分发环境变量 — 生成 .env 文件写入APP目录
+        // 5. 生成.env — APP的ZIP包不含.env，由Admin APP在发布时统一生成
         try {
             const port = resolveAppPort(appId, PORT_RANGE_START, PORT_RANGE_END);
             const url = resolveAppUrl(appId, 'localhost', port);
@@ -84,8 +85,8 @@ export async function POST(
                         databaseUrl = dbData.data?.DATABASE_URL || '';
                     }
                 } catch {
-                    logger.warn('从Database APP获取配置失败，使用默认值');
-                    databaseUrl = process.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/openone';
+                    logger.warn('从Database APP获取配置失败');
+                    databaseUrl = '';
                 }
             }
 

@@ -6,13 +6,16 @@ import { eq } from 'drizzle-orm';
 import { schemaRegistry, migrationHistory } from '../../../../db/schema';
 
 const logger = createLogger('db-manager');
-const DB_URL = process.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/openone';
+const DB_URL = process.env.DATABASE_URL;
+if (!DB_URL) {
+    throw new Error('未配置 DATABASE_URL 环境变量');
+}
 
 /**
  * 获取数据库客户端
  */
 function getDb() {
-    return dbClient(DB_URL);
+    return dbClient(DB_URL!);
 }
 
 /**
@@ -58,7 +61,7 @@ export async function POST(
 
         // 2. Create Schema
         try {
-            await addSchema(DB_URL, schemaName);
+            await addSchema(DB_URL!, schemaName);
             logger.info('PG Schema创建完成', { schemaName });
         } catch (err) {
             logger.error('PG Schema创建失败', err);
@@ -87,7 +90,7 @@ export async function POST(
                 }
 
                 try {
-                    await runSql(DB_URL, schemaName, item.content);
+                    await runSql(DB_URL!, schemaName, item.content);
                     await db.insert(migrationHistory).values({
                         appId,
                         filename: item.filename,

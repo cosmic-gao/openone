@@ -3,7 +3,10 @@ import type { ApiResponse } from '@openone/types';
 import { createLogger } from '@openone/utils';
 
 const logger = createLogger('db-env');
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/openone';
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+    throw new Error('未配置 DATABASE_URL 环境变量');
+}
 
 /**
  * GET /api/env/database?appId=xxx&schemaName=xxx
@@ -32,7 +35,7 @@ export async function GET(
 
         // 返回该APP需要的数据库相关环境变量
         const databaseVars: Record<string, string> = {
-            DATABASE_URL: DATABASE_URL,
+            DATABASE_URL: DATABASE_URL!,
             SCHEMA_NAME: resolvedSchema,
         };
 

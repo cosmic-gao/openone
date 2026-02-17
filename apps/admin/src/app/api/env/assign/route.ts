@@ -66,9 +66,9 @@ export async function POST(
                 }
             } catch (err) {
                 logger.warn('从Database APP获取配置失败（可能未启动）', err);
-                // 回退：使用默认值
+                // 回退：无法获取配置
                 databaseVars = {
-                    DATABASE_URL: process.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/openone',
+                    DATABASE_URL: '',
                     SCHEMA_NAME: schemaName,
                 };
             }

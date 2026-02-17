@@ -5,7 +5,7 @@ export default defineConfig({
     out: './drizzle',
     dialect: 'postgresql',
     dbCredentials: {
-        url: process.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/openone',
+        url: process.env.DATABASE_URL!,
     },
     schemaFilter: ['VSnESG0K3DILCmacEzeab_auth'],
 });
