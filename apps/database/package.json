@@ -10,24 +10,24 @@
         "clean": "rimraf .next"
     },
     "dependencies": {
-        "@openone/types": "workspace:*",
-        "@openone/utils": "workspace:*",
         "@openone/database": "workspace:*",
+        "@openone/utils": "workspace:*",
+        "@tailwindcss/postcss": "^4.1.18",
+        "drizzle-orm": "^0.45.1",
+        "lucide-react": "^0.475.0",
         "next": "^16.1.6",
+        "postgres": "^3.4.5",
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
-        "drizzle-orm": "^0.45.1",
-        "postgres": "^3.4.5",
-        "tailwindcss": "^4.1.18",
-        "@tailwindcss/postcss": "^4.1.18",
-        "lucide-react": "^0.475.0"
+        "tailwindcss": "^4.1.18"
     },
     "devDependencies": {
+        "@openone/types": "workspace:*",
         "@types/node": "^25.2.3",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
-        "typescript": "^5.7.3",
+        "drizzle-kit": "^0.31.9",
         "rimraf": "^6.0.1",
-        "drizzle-kit": "^0.31.9"
+        "typescript": "^5.7.3"
     }
 }

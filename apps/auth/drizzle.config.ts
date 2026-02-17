@@ -7,5 +7,5 @@ export default defineConfig({
     dbCredentials: {
         url: process.env.DATABASE_URL || 'postgresql://openone:openone_dev@localhost:5432/openone',
     },
-    schemaFilter: ['1001_auth'],
+    schemaFilter: ['VSnESG0K3DILCmacEzeab_auth'],
 });

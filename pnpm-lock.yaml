@@ -20,9 +20,6 @@ importers:
       '@openone/database':
         specifier: workspace:*
         version: link:../../packages/database
-      '@openone/types':
-        specifier: workspace:*
-        version: link:../../packages/types
       '@openone/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -54,6 +51,9 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18
     devDependencies:
+      '@openone/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@types/adm-zip':
         specifier: ^0.5.7
         version: 0.5.7
@@ -139,9 +139,6 @@ importers:
       '@openone/database':
         specifier: workspace:*
         version: link:../../packages/database
-      '@openone/types':
-        specifier: workspace:*
-        version: link:../../packages/types
       '@openone/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -170,6 +167,9 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18
     devDependencies:
+      '@openone/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@types/node':
         specifier: ^25.2.3
         version: 25.2.3
@@ -191,9 +191,6 @@ importers:
 
   apps/permission:
     dependencies:
-      '@openone/database':
-        specifier: workspace:*
-        version: link:../../packages/database
       '@openone/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -225,6 +222,9 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18
     devDependencies:
+      '@openone/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       '@types/node':
         specifier: ^25.2.3
         version: 25.2.3
@@ -246,9 +246,6 @@ importers:
 
   apps/shell:
     dependencies:
-      '@openone/types':
-        specifier: workspace:*
-        version: link:../../packages/types
       '@openone/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -280,6 +277,9 @@ importers:
         specifier: ^5.0.3
         version: 5.0.11(@types/react@19.2.14)(react@19.2.4)
     devDependencies:
+      '@openone/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@types/node':
         specifier: ^25.2.3
         version: 25.2.3
