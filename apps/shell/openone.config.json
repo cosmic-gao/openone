@@ -1,0 +1,11 @@
+{
+    "appId": "shell",
+    "appName": "Shell 主框架",
+    "version": "1.0.0",
+    "menus": [],
+    "permissions": [],
+    "database": {
+        "schemaName": "",
+        "migrations": ""
+    }
+}

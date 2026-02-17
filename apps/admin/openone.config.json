@@ -1,0 +1,45 @@
+{
+    "appId": "admin",
+    "appName": "APP管理",
+    "version": "1.0.0",
+    "menus": [
+        {
+            "key": "app-list",
+            "label": "APP列表",
+            "icon": "LayoutGrid",
+            "path": "/"
+        },
+        {
+            "key": "app-upload",
+            "label": "上传APP",
+            "icon": "Upload",
+            "path": "/upload"
+        }
+    ],
+    "permissions": [
+        {
+            "code": "admin:app:read",
+            "name": "查看APP列表",
+            "description": "允许查看已注册的APP"
+        },
+        {
+            "code": "admin:app:upload",
+            "name": "上传APP",
+            "description": "允许上传和发布新APP"
+        },
+        {
+            "code": "admin:app:delete",
+            "name": "删除APP",
+            "description": "允许删除已注册的APP"
+        },
+        {
+            "code": "admin:env:manage",
+            "name": "环境变量管理",
+            "description": "允许管理APP的环境变量分发"
+        }
+    ],
+    "database": {
+        "schemaName": "",
+        "migrations": ""
+    }
+}

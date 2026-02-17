@@ -1,0 +1,29 @@
+{
+    "appId": "database",
+    "appName": "数据库管理",
+    "version": "1.0.0",
+    "menus": [
+        {
+            "key": "schema-list",
+            "label": "Schema 列表",
+            "icon": "Database",
+            "path": "/"
+        }
+    ],
+    "permissions": [
+        {
+            "code": "database:schema:read",
+            "name": "查看Schema",
+            "description": "允许查看数据库Schema列表"
+        },
+        {
+            "code": "database:schema:migrate",
+            "name": "执行迁移",
+            "description": "允许执行数据库Schema迁移"
+        }
+    ],
+    "database": {
+        "schemaName": "db_manager",
+        "migrations": "./drizzle"
+    }
+}

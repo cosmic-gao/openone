@@ -1,0 +1,40 @@
+{
+    "appId": "permission",
+    "appName": "权限管理",
+    "version": "1.0.0",
+    "menus": [
+        {
+            "key": "permission-list",
+            "label": "权限定义",
+            "icon": "Shield",
+            "path": "/"
+        },
+        {
+            "key": "role-list",
+            "label": "角色管理",
+            "icon": "Users",
+            "path": "/roles"
+        }
+    ],
+    "permissions": [
+        {
+            "code": "permission:define:read",
+            "name": "查看权限定义",
+            "description": "允许查看所有APP注册的权限"
+        },
+        {
+            "code": "permission:role:manage",
+            "name": "角色管理",
+            "description": "允许创建和编辑角色"
+        },
+        {
+            "code": "permission:assign",
+            "name": "分配权限",
+            "description": "允许为用户分配角色和权限"
+        }
+    ],
+    "database": {
+        "schemaName": "permission",
+        "migrations": "./drizzle"
+    }
+}
