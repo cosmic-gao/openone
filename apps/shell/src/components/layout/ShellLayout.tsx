@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useShellStore } from '@/stores/shellStore';
-import { verifyToken } from '@openone/utils';
+import { checkToken } from '@openone/utils';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { AppContainer } from './AppContainer';
@@ -25,7 +25,7 @@ export function ShellLayout() {
     const refreshToken = params.get('refreshToken');
 
     if (accessToken && refreshToken) {
-      const payload = verifyToken(accessToken, JWT_SECRET);
+      const payload = checkToken(accessToken, JWT_SECRET);
       if (payload) {
         setAuth(
           {
@@ -47,7 +47,7 @@ export function ShellLayout() {
     // 2. 检查当前 Store 中的 Token 是否有效
     const currentToken = useShellStore.getState().accessToken;
     if (currentToken) {
-        const payload = verifyToken(currentToken, JWT_SECRET);
+        const payload = checkToken(currentToken, JWT_SECRET);
         if (!payload) {
             // Token 无效或过期，清除状态并重定向
             useShellStore.getState().clearAuth();

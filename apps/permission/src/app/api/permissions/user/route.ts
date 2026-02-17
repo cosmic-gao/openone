@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, UserPermissionsResponse } from '@openone/types';
 import { dbClient } from '@openone/database';
 import { userRoles, rolePermissions, permissions, roles } from '@/db/schema';
-import { createLogger } from '@openone/utils';
+import { makeLogger } from '@openone/utils';
 import { eq } from 'drizzle-orm';
 
-const logger = createLogger('permission-app');
+const logger = makeLogger('permission-app');
 
 /**
  * GET /api/permissions/user?userId=xxx
@@ -56,7 +56,7 @@ export async function GET(
         });
 
     } catch (err) {
-        logger.error('获取用户权限失败', err);
+        logger.logError('获取用户权限失败', err);
         return NextResponse.json(
             { success: false, error: '获取用户权限失败' },
             { status: 500 }

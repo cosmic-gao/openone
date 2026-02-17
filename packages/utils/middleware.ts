@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { verifyToken, extractBearerToken } from './auth';
+import { checkToken, parseHeader } from './auth';
 import type { TokenPayload } from '@openone/types';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
@@ -22,14 +22,14 @@ export function withAuth(
 ): TokenPayload | null {
     // 1. 提取 Token
     const authHeader = request.headers.get('Authorization') || undefined;
-    const token = extractBearerToken(authHeader);
+    const token = parseHeader(authHeader);
 
     if (!token) {
         return null;
     }
 
     // 2. 验证 Token
-    const payload = verifyToken(token, JWT_SECRET);
+    const payload = checkToken(token, JWT_SECRET);
     if (!payload) {
         return null; // Token 无效或过期
     }

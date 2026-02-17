@@ -1,6 +1,6 @@
 export {
-    resolveAppPort,
-    resolveAppUrl,
+    calcPort,
+    calcUrl,
 } from './env';
 export * from './auth';
 export * from './middleware';

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, PermissionSyncRequest, Permission } from '@openone/types';
-import { createLogger } from '@openone/utils';
+import { makeLogger } from '@openone/utils';
 import { dbClient, appSchema } from '@openone/database';
 import { permissions as permissionsTable } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 
-const logger = createLogger('permission-app');
+const logger = makeLogger('permission-app');
 
 /**
  * POST /api/permissions/sync
@@ -45,7 +45,7 @@ export async function POST(
             await db.insert(permissionsTable).values(newPermissions);
         }
 
-        logger.info('权限同步完成', {
+        logger.logInfo('权限同步完成', {
             app,
             appName,
             count: newPermissions.length,
@@ -56,7 +56,7 @@ export async function POST(
             data: { synced: newPermissions.length },
         });
     } catch (err) {
-        logger.error('权限同步失败', err);
+        logger.logError('权限同步失败', err);
         return NextResponse.json(
             { success: false, error: '权限同步失败' },
             { status: 500 }
@@ -77,7 +77,7 @@ export async function GET(): Promise<NextResponse<ApiResponse<Permission[]>>> {
         // 这里的类型转换通常是自动兼容的
         return NextResponse.json({ success: true, data: allPermissions as any[] });
     } catch (err) {
-        logger.error('获取权限列表失败', err);
+        logger.logError('获取权限列表失败', err);
         return NextResponse.json(
             { success: false, error: '获取权限列表失败' },
             { status: 500 }

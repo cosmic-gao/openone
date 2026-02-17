@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import {
-    generateAccessToken,
-    generateRefreshToken,
-    createLogger,
+    signAccess,
+    signRefresh,
+    makeLogger,
 } from '@openone/utils';
 import type { ApiResponse, LoginResponse, UserInfo, UserPermissionsResponse } from '@openone/types';
 import { dbClient } from '@openone/database';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-const logger = createLogger('auth-app');
+const logger = makeLogger('auth-app');
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'dev-refresh-secret';
 // 注意：容器内通信通常用 http://permission:3000 或 localhost:端口，视部署环境而定
@@ -77,10 +77,10 @@ export async function POST(
                     permissions = permData.data.permissions;
                 }
             } else {
-                logger.warn('获取用户权限失败: Permission APP返回非200状态', { status: permRes.status });
+                logger.logWarn('获取用户权限失败: Permission APP返回非200状态', { status: permRes.status });
             }
         } catch (err) {
-            logger.warn('获取用户权限失败: 无法连接Permission APP', err);
+            logger.logWarn('获取用户权限失败: 无法连接Permission APP', err);
             // 降级处理：登录成功但不带权限，或者从 Token 中省略权限
         }
 
@@ -94,17 +94,17 @@ export async function POST(
         };
 
         // 生成 Token 时会把 roles 和 permissions 放入 payload
-        const accessToken = generateAccessToken(userInfo, JWT_SECRET);
-        const refreshToken = generateRefreshToken(user.id, JWT_REFRESH_SECRET);
+        const accessToken = signAccess(userInfo, JWT_SECRET);
+        const refreshToken = signRefresh(user.id, JWT_REFRESH_SECRET);
 
-        logger.info('用户登录成功', { userId: user.id, username: user.username });
+        logger.logInfo('用户登录成功', { userId: user.id, username: user.username });
 
         return NextResponse.json({
             success: true,
             data: { accessToken, refreshToken, user: userInfo },
         });
     } catch (err) {
-        logger.error('登录处理失败', err);
+        logger.logError('登录处理失败', err);
         return NextResponse.json(
             { success: false, error: '服务器内部错误', code: 'INTERNAL_ERROR' },
             { status: 500 }

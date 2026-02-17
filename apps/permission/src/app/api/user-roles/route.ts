@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, UserRoleAssignRequest, Role } from '@openone/types';
 import { dbClient } from '@openone/database';
 import { userRoles, roles } from '@/db/schema';
-import { createLogger, withAuth } from '@openone/utils';
+import { makeLogger, withAuth } from '@openone/utils';
 import { eq, and } from 'drizzle-orm';
 
-const logger = createLogger('permission-app');
+const logger = makeLogger('permission-app');
 
 /**
  * GET /api/user-roles?userId=xxx
@@ -51,7 +51,7 @@ export async function GET(
             data: userRoleList as unknown as Role[], // Role requires permissions field, strictly speaking
         });
     } catch (err) {
-        logger.error('获取用户角色失败', err);
+        logger.logError('获取用户角色失败', err);
         return NextResponse.json(
             { success: false, error: '获取用户角色失败' },
             { status: 500 }
@@ -103,7 +103,7 @@ export async function POST(
             }
         });
 
-        logger.info('用户角色分配完成', { userId, count: roleIds.length });
+        logger.logInfo('用户角色分配完成', { userId, count: roleIds.length });
 
         return NextResponse.json({
             success: true,
@@ -111,7 +111,7 @@ export async function POST(
         });
 
     } catch (err) {
-        logger.error('用户角色分配失败', err);
+        logger.logError('用户角色分配失败', err);
         return NextResponse.json(
             { success: false, error: '用户角色分配失败' },
             { status: 500 }

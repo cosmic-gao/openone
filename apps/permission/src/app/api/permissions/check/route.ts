@@ -3,9 +3,9 @@ import type { ApiResponse, PermissionCheckRequest, PermissionCheckResponse } fro
 import { dbClient } from '@openone/database';
 import { userRoles, rolePermissions, permissions, roles } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { createLogger } from '@openone/utils';
+import { makeLogger } from '@openone/utils';
 
-const logger = createLogger('permission-app');
+const logger = makeLogger('permission-app');
 
 /**
  * POST /api/permissions/check
@@ -51,7 +51,7 @@ export async function POST(
             data: { hasPermission },
         });
     } catch (err) {
-        logger.error('权限校验失败', err);
+        logger.logError('权限校验失败', err);
         return NextResponse.json(
             { success: false, error: '权限校验失败' },
             { status: 500 }

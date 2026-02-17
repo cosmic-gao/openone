@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, AppConfig } from '@openone/types';
 import {
-    createLogger,
-    generateEnvFile,
-    resolveAppPort,
-    resolveAppUrl,
-    resolveSchema,
+    makeLogger,
+    makeFile,
+    calcPort,
+    calcUrl,
+    getSchema,
     withAuth,
 } from '@openone/utils';
 import fs from 'fs/promises';
 import path from 'path';
 import AdmZip from 'adm-zip';
 
-const logger = createLogger('admin-app');
+const logger = makeLogger('admin-app');
 const STORAGE_PATH = process.env.APP_STORAGE_PATH || './storage/apps';
 const PERMISSION_APP_URL = process.env.PERMISSION_APP_URL || 'http://localhost:3003';
 const DB_MANAGER_APP_URL = process.env.DB_MANAGER_APP_URL || 'http://localhost:3004';
@@ -76,23 +76,23 @@ export async function POST(
         }
 
         const { appId, appName, version, permissions, database, menus } = appConfig;
-        logger.info('开始处理APP上传', { appId, version, operator: user.username });
+        logger.logInfo('开始处理APP上传', { appId, version, operator: user.username });
 
         // 4. 解压到存储目录
         const appDir = path.join(STORAGE_PATH, appId, version);
         await fs.mkdir(appDir, { recursive: true });
         zip.extractAllTo(appDir, true);
-        logger.info('文件解压完成', { appDir });
+        logger.logInfo('文件解压完成', { appDir });
 
         // 5. 生成.env — APP的ZIP包不含.env，由Admin APP在发布时统一生成
         try {
-            const port = resolveAppPort(appId, PORT_RANGE_START, PORT_RANGE_END);
-            const url = resolveAppUrl(appId, 'localhost', port);
+            const port = calcPort(appId, PORT_RANGE_START, PORT_RANGE_END);
+            const url = calcUrl(appId, 'localhost', port);
 
             // 从 Database APP 获取数据库配置
             let databaseUrl = '';
             const schemaName = database?.schemaName
-                ? resolveSchema(appId, database.schemaName)
+                ? getSchema(appId, database.schemaName)
                 : '';
             if (schemaName) {
                 try {
@@ -104,12 +104,12 @@ export async function POST(
                         databaseUrl = dbData.data?.DATABASE_URL || '';
                     }
                 } catch {
-                    logger.warn('从Database APP获取配置失败');
+                    logger.logWarn('从Database APP获取配置失败');
                     databaseUrl = '';
                 }
             }
 
-            const envContent = generateEnvFile({
+            const envContent = makeFile({
                 appId,
                 port,
                 url,
@@ -123,9 +123,9 @@ export async function POST(
 
             // 将 .env 写入APP部署目录
             await fs.writeFile(path.join(appDir, '.env'), envContent, 'utf-8');
-            logger.info('环境变量分发完成', { appId, port, url });
+            logger.logInfo('环境变量分发完成', { appId, port, url });
         } catch (err) {
-            logger.warn('环境变量分发失败', err);
+            logger.logWarn('环境变量分发失败', err);
         }
 
         // 6. 同步权限到permission-app
@@ -136,9 +136,9 @@ export async function POST(
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ appId, appName, permissions }),
                 });
-                logger.info('权限同步完成', { appId, count: permissions.length });
+                logger.logInfo('权限同步完成', { appId, count: permissions.length });
             } catch (err) {
-                logger.warn('权限同步失败（permission-app可能未启动）', err);
+                logger.logWarn('权限同步失败（permission-app可能未启动）', err);
             }
         }
 
@@ -159,7 +159,7 @@ export async function POST(
                         }))
                     );
                 } catch {
-                    logger.warn('未找到迁移文件目录', { migrationsDir });
+                    logger.logWarn('未找到迁移文件目录', { migrationsDir });
                 }
 
                 await fetch(`${DB_MANAGER_APP_URL}/api/schemas/sync`, {
@@ -168,16 +168,16 @@ export async function POST(
                     body: JSON.stringify({
                         appId,
                         appName,
-                        schemaName: resolveSchema(appId, database.schemaName),
+                        schemaName: getSchema(appId, database.schemaName),
                         migrations,
                     }),
                 });
-                logger.info('Schema同步完成', {
+                logger.logInfo('Schema同步完成', {
                     appId,
-                    schemaName: resolveSchema(appId, database.schemaName),
+                    schemaName: getSchema(appId, database.schemaName),
                 });
             } catch (err) {
-                logger.warn('Schema同步失败（db-manager-app可能未启动）', err);
+                logger.logWarn('Schema同步失败（db-manager-app可能未启动）', err);
             }
         }
 
@@ -196,17 +196,17 @@ export async function POST(
                 }),
             });
         } catch (err) {
-            logger.error('APP注册失败', err);
+            logger.logError('APP注册失败', err);
         }
 
-        logger.info('APP发布完成', { appId, version });
+        logger.logInfo('APP发布完成', { appId, version });
 
         return NextResponse.json({
             success: true,
             data: { appId, version },
         });
     } catch (err) {
-        logger.error('APP上传处理失败', err);
+        logger.logError('APP上传处理失败', err);
         return NextResponse.json(
             { success: false, error: '上传处理失败' },
             { status: 500 }

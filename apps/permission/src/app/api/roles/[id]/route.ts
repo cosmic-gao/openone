@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, Role } from '@openone/types';
 import { dbClient } from '@openone/database';
 import { roles, rolePermissions, permissions as permissionsTable } from '@/db/schema';
-import { createLogger } from '@openone/utils';
+import { makeLogger } from '@openone/utils';
 import { eq } from 'drizzle-orm';
 
-const logger = createLogger('permission-app');
+const logger = makeLogger('permission-app');
 
 /**
  * GET /api/roles/[id]
@@ -46,7 +46,7 @@ export async function GET(
         });
 
     } catch (err) {
-        logger.error('获取角色详情失败', err);
+        logger.logError('获取角色详情失败', err);
         return NextResponse.json(
             { success: false, error: '获取角色详情失败' },
             { status: 500 }
@@ -115,7 +115,7 @@ export async function PUT(
                 { status: 404 }
             );
         }
-        logger.error('更新角色失败', err);
+        logger.logError('更新角色失败', err);
         return NextResponse.json(
             { success: false, error: '更新角色失败' },
             { status: 500 }
@@ -139,14 +139,14 @@ export async function DELETE(
         // 关联的 user_roles 和 role_permissions 会自动删除
         await db.delete(roles).where(eq(roles.id, id));
 
-        logger.info('角色删除完成', { roleId: id });
+        logger.logInfo('角色删除完成', { roleId: id });
 
         return NextResponse.json({
             success: true,
             data: { deleted: true },
         });
     } catch (err) {
-        logger.error('删除角色失败', err);
+        logger.logError('删除角色失败', err);
         return NextResponse.json(
             { success: false, error: '删除角色失败' },
             { status: 500 }

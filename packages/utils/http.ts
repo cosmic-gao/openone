@@ -1,25 +1,26 @@
 import type { ApiResponse } from '@openone/types';
 
 /** HTTP请求配置 */
-interface RequestConfig extends RequestInit {
+/** HTTP请求配置 */
+interface Option extends RequestInit {
     /** 请求参数（拼接到URL） */
     params?: Record<string, string>;
 }
 
 /**
  * 创建带Token的HTTP请求客户端
- * @param baseUrl - API基础地址
- * @param getToken - 获取当前Token的函数
+ * @param host - API基础地址
+ * @param findToken - 获取当前Token的函数
  * @returns 封装好的请求方法
  * @example
  * ```ts
- * const api = createHttpClient('http://localhost:3002', () => token);
+ * const api = initClient('http://localhost:3002', () => token);
  * const result = await api.get('/api/apps');
  * ```
  */
-export function createHttpClient(
-    baseUrl: string,
-    getToken: () => string | null
+export function initClient(
+    host: string,
+    findToken: () => string | null
 ) {
     /**
      * 发送HTTP请求
@@ -29,17 +30,17 @@ export function createHttpClient(
      */
     async function request<T>(
         path: string,
-        config: RequestConfig = {}
+        config: Option = {}
     ): Promise<ApiResponse<T>> {
-        const { params, ...fetchConfig } = config;
-        let url = `${baseUrl}${path}`;
+        const { params, ...conf } = config;
+        let url = `${host}${path}`;
 
         if (params) {
-            const searchParams = new URLSearchParams(params);
-            url += `?${searchParams.toString()}`;
+            const query = new URLSearchParams(params);
+            url += `?${query.toString()}`;
         }
 
-        const token = getToken();
+        const token = findToken();
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
             ...(config.headers as Record<string, string>),
@@ -49,7 +50,7 @@ export function createHttpClient(
         }
 
         const response = await fetch(url, {
-            ...fetchConfig,
+            ...conf,
             headers,
         });
 

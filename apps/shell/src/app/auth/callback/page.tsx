@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useShellStore } from '@/stores/shellStore';
-import { verifyToken } from '@openone/utils';
+import { checkToken } from '@openone/utils';
 
 const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || 'dev-secret-change-me';
 
@@ -19,7 +19,7 @@ export default function AuthCallbackPage() {
     const refreshToken = params.get('refreshToken');
 
     if (accessToken && refreshToken) {
-      const payload = verifyToken(accessToken, JWT_SECRET);
+      const payload = checkToken(accessToken, JWT_SECRET);
       if (payload) {
         setAuth(
           {

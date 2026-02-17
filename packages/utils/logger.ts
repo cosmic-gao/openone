@@ -1,8 +1,9 @@
 /** 日志级别 */
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+/** 日志级别 */
+type Level = 'debug' | 'info' | 'warn' | 'error';
 
 /** 日志级别对应的优先级 */
-const LOG_LEVEL_PRIORITY: Record<LogLevel, number> = {
+const RANK: Record<Level, number> = {
     debug: 0,
     info: 1,
     warn: 2,
@@ -11,26 +12,26 @@ const LOG_LEVEL_PRIORITY: Record<LogLevel, number> = {
 
 /**
  * 创建统一日志实例
- * @param namespace - 日志命名空间（通常为APP名称）
- * @param minLevel - 最低日志级别（低于此级别不输出）
+ * @param scope - 日志命名空间（通常为APP名称）
+ * @param floor - 最低日志级别（低于此级别不输出）
  * @returns 日志函数集合
  * @example
  * ```ts
- * const logger = createLogger('admin-app');
- * logger.info('APP发布成功', { appId: 'order-management' });
+ * const logger = makeLogger('admin-app');
+ * logger.logInfo('APP发布成功', { appId: 'order-management' });
  * ```
  */
-export function createLogger(
-    namespace: string,
-    minLevel: LogLevel = 'info'
+export function makeLogger(
+    scope: string,
+    floor: Level = 'info'
 ) {
-    const minPriority = LOG_LEVEL_PRIORITY[minLevel];
+    const min = RANK[floor];
 
-    function log(level: LogLevel, message: string, meta?: unknown) {
-        if (LOG_LEVEL_PRIORITY[level] < minPriority) return;
+    function writeLog(level: Level, message: string, meta?: unknown) {
+        if (RANK[level] < min) return;
 
         const timestamp = new Date().toISOString();
-        const prefix = `[${timestamp}] [${level.toUpperCase()}] [${namespace}]`;
+        const prefix = `[${timestamp}] [${level.toUpperCase()}] [${scope}]`;
 
         const logFn = level === 'error' ? console.error
             : level === 'warn' ? console.warn
@@ -44,9 +45,9 @@ export function createLogger(
     }
 
     return {
-        debug: (message: string, meta?: unknown) => log('debug', message, meta),
-        info: (message: string, meta?: unknown) => log('info', message, meta),
-        warn: (message: string, meta?: unknown) => log('warn', message, meta),
-        error: (message: string, meta?: unknown) => log('error', message, meta),
+        logDebug: (message: string, meta?: unknown) => writeLog('debug', message, meta),
+        logInfo: (message: string, meta?: unknown) => writeLog('info', message, meta),
+        logWarn: (message: string, meta?: unknown) => writeLog('warn', message, meta),
+        logError: (message: string, meta?: unknown) => writeLog('error', message, meta),
     };
 }

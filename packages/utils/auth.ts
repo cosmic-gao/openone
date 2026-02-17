@@ -1,24 +1,24 @@
 import jwt from 'jsonwebtoken';
 import type { TokenPayload, UserInfo } from '@openone/types';
 
-const DEFAULT_ACCESS_EXPIRY = '2h';
-const DEFAULT_REFRESH_EXPIRY = '7d';
+const LIFE = '2h';
+const LIMIT = '7d';
 
 /**
  * 生成JWT访问令牌
  * @param user - 用户信息
  * @param secret - JWT密钥
- * @param expiresIn - 过期时间，默认2小时
+ * @param time - 过期时间，默认2小时
  * @returns 签名后的JWT字符串
  * @example
  * ```ts
- * const token = generateAccessToken(user, 'my-secret');
+ * const token = signAccess(user, 'my-secret');
  * ```
  */
-export function generateAccessToken(
+export function signAccess(
     user: UserInfo,
     secret: string,
-    expiresIn: string = DEFAULT_ACCESS_EXPIRY
+    time: string = LIFE
 ): string {
     const payload: Omit<TokenPayload, 'iat' | 'exp'> = {
         sub: user.id,
@@ -26,22 +26,22 @@ export function generateAccessToken(
         roles: user.roles,
         permissions: user.permissions,
     };
-    return jwt.sign(payload, secret, { expiresIn: expiresIn as any });
+    return jwt.sign(payload, secret, { expiresIn: time as any });
 }
 
 /**
  * 生成JWT刷新令牌
  * @param userId - 用户ID
  * @param secret - 刷新令牌密钥
- * @param expiresIn - 过期时间，默认7天
+ * @param time - 过期时间，默认7天
  * @returns 签名后的JWT字符串
  */
-export function generateRefreshToken(
+export function signRefresh(
     userId: string,
     secret: string,
-    expiresIn: string = DEFAULT_REFRESH_EXPIRY
+    time: string = LIMIT
 ): string {
-    return jwt.sign({ sub: userId }, secret, { expiresIn: expiresIn as any });
+    return jwt.sign({ sub: userId }, secret, { expiresIn: time as any });
 }
 
 /**
@@ -51,11 +51,11 @@ export function generateRefreshToken(
  * @returns 解析后的Token载荷，无效时返回null
  * @example
  * ```ts
- * const payload = verifyToken(token, 'my-secret');
+ * const payload = checkToken(token, 'my-secret');
  * if (payload) console.log(payload.sub);
  * ```
  */
-export function verifyToken(
+export function checkToken(
     token: string,
     secret: string
 ): TokenPayload | null {
@@ -71,7 +71,7 @@ export function verifyToken(
  * @param header - Authorization头部值（Bearer xxx）
  * @returns Token字符串，格式不匹配返回null
  */
-export function extractBearerToken(header?: string): string | null {
+export function parseHeader(header?: string): string | null {
     if (!header?.startsWith('Bearer ')) return null;
     return header.slice(7);
 }
