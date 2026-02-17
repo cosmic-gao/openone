@@ -1,18 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, AppRegistration } from '@openone/types';
+import fs from 'fs/promises';
+import path from 'path';
 
-/**
- * 临时内存存储（后续替换为数据库）
- * 用于开发阶段快速验证流程
- */
-const appsStore: AppRegistration[] = [];
+// Shared persistence (Same logic as [appId]/route.ts)
+const STORE_FILE = path.join(process.cwd(), 'data', 'apps.json');
+
+async function getApps(): Promise<AppRegistration[]> {
+    try {
+        const data = await fs.readFile(STORE_FILE, 'utf-8');
+        return JSON.parse(data);
+    } catch {
+        return [];
+    }
+}
+
+async function saveApps(apps: AppRegistration[]) {
+    await fs.mkdir(path.dirname(STORE_FILE), { recursive: true });
+    await fs.writeFile(STORE_FILE, JSON.stringify(apps, null, 2));
+}
 
 /**
  * GET /api/apps
  * 获取所有已注册的APP列表
  */
 export async function GET(): Promise<NextResponse<ApiResponse<AppRegistration[]>>> {
-    return NextResponse.json({ success: true, data: appsStore });
+    const apps = await getApps();
+    return NextResponse.json({ success: true, data: apps });
 }
 
 /**
@@ -33,11 +47,11 @@ export async function POST(
             );
         }
 
-        // 检查是否已存在
-        const existingIndex = appsStore.findIndex((a) => a.appId === appId);
+        const apps = await getApps();
+        const existingIndex = apps.findIndex((a) => a.appId === appId);
 
         const app: AppRegistration = {
-            id: existingIndex >= 0 ? appsStore[existingIndex]!.id : appsStore.length + 1,
+            id: existingIndex >= 0 ? apps[existingIndex]!.id : Date.now(), // Use timestamp number for ID if new
             appId,
             appName,
             description: description || '',
@@ -45,15 +59,17 @@ export async function POST(
             latestVersion: latestVersion || '1.0.0',
             menuConfig: menuConfig || [],
             url: url || '',
-            createdAt: existingIndex >= 0 ? appsStore[existingIndex]!.createdAt : new Date(),
+            createdAt: existingIndex >= 0 ? apps[existingIndex]!.createdAt : new Date(),
             updatedAt: new Date(),
         };
 
         if (existingIndex >= 0) {
-            appsStore[existingIndex] = app;
+            apps[existingIndex] = app;
         } else {
-            appsStore.push(app);
+            apps.push(app);
         }
+
+        await saveApps(apps);
 
         return NextResponse.json({ success: true, data: app });
     } catch {
