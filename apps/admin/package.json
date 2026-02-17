@@ -7,7 +7,9 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "clean": "rimraf .next"
+        "clean": "rimraf .next",
+        "typecheck": "tsc --noEmit",
+        "format": "prettier --write ."
     },
     "dependencies": {
         "@openone/utils": "workspace:*",
