@@ -32,7 +32,7 @@ export async function POST(
         const permissionRecords: Permission[] = permissions.map((p, index) => ({
             id: `${appId}_${index}`,
             appId,
-            code: `${appId}:${p.code}`,
+            code: p.code.startsWith(`${appId}:`) ? p.code : `${appId}:${p.code}`,
             name: p.name,
             description: p.description,
             createdAt: new Date(),

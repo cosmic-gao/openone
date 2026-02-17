@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, AppConfig } from '@openone/types';
-import { createLogger, generateEnvFile, resolveAppPort, resolveAppUrl } from '@openone/utils';
+import {
+    createLogger,
+    generateEnvFile,
+    resolveAppPort,
+    resolveAppUrl,
+    resolveSchema,
+} from '@openone/utils';
 import fs from 'fs/promises';
 import path from 'path';
 import AdmZip from 'adm-zip';
@@ -74,7 +80,9 @@ export async function POST(
 
             // 从 Database APP 获取数据库配置
             let databaseUrl = '';
-            const schemaName = database?.schemaName || '';
+            const schemaName = database?.schemaName
+                ? resolveSchema(appId, database.schemaName)
+                : '';
             if (schemaName) {
                 try {
                     const dbRes = await fetch(
@@ -149,11 +157,14 @@ export async function POST(
                     body: JSON.stringify({
                         appId,
                         appName,
-                        schemaName: database.schemaName,
+                        schemaName: resolveSchema(appId, database.schemaName),
                         migrations,
                     }),
                 });
-                logger.info('Schema同步完成', { appId, schemaName: database.schemaName });
+                logger.info('Schema同步完成', {
+                    appId,
+                    schemaName: resolveSchema(appId, database.schemaName),
+                });
             } catch (err) {
                 logger.warn('Schema同步失败（db-manager-app可能未启动）', err);
             }

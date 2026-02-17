@@ -1,7 +1,8 @@
 import { pgSchema, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 /** Auth APP 专属 PG Schema */
-export const authSchema = pgSchema('VSnESG0K3DILCmacEzeab_auth');
+const schemaName = process.env.SCHEMA_NAME || 'auth';
+export const authSchema = pgSchema(schemaName);
 
 /** 用户表 */
 export const users = authSchema.table('users', {

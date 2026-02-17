@@ -229,6 +229,11 @@ export function resolveAppUrl(
     return `${protocol}://${domain}:${resolvedPort}`;
 }
 
+export function resolveSchema(appId: string, schemaName?: string): string {
+    const resolvedName = (schemaName || appId).trim();
+    return resolvedName.replace(/-/g, '_');
+}
+
 /**
  * 合并多个环境变量分配为一个 .env 内容
  * @param assignment - 按职责分类的环境变量

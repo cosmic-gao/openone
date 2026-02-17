@@ -1,7 +1,8 @@
 import { pgSchema, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 /** Permission APP 专属 PG Schema */
-export const permissionSchema = pgSchema('GJgUM0k-UkbS6v0L87Fio_permission');
+const schemaName = process.env.SCHEMA_NAME || 'permission';
+export const permissionSchema = pgSchema(schemaName);
 
 /** 角色表 */
 export const roles = permissionSchema.table('roles', {

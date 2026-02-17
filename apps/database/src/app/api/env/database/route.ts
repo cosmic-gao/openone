@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse } from '@openone/types';
-import { createLogger } from '@openone/utils';
+import { createLogger, resolveSchema } from '@openone/utils';
 
 const logger = createLogger('db-env');
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -29,7 +29,7 @@ export async function GET(
             );
         }
 
-        const resolvedSchema = schemaName || appId.replace(/-/g, '_');
+        const resolvedSchema = resolveSchema(appId, schemaName || undefined);
 
         logger.info('返回APP数据库配置', { appId, schemaName: resolvedSchema });
 

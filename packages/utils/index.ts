@@ -15,5 +15,6 @@ export {
     parseEnvFile,
     resolveAppPort,
     resolveAppUrl,
+    resolveSchema,
     mergeEnvAssignment,
 } from './env';

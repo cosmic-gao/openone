@@ -11,6 +11,7 @@ import {
     resolveAppPort,
     resolveAppUrl,
     generateEnvFile,
+    resolveSchema,
 } from '@openone/utils';
 
 const logger = createLogger('admin-env');
@@ -54,10 +55,11 @@ export async function POST(
 
         // 2. 从 Database APP 获取数据库配置
         let databaseVars: Record<string, string> = {};
-        if (schemaName) {
+        const resolvedSchema = schemaName ? resolveSchema(appId, schemaName) : '';
+        if (resolvedSchema) {
             try {
                 const dbRes = await fetch(
-                    `${DB_MANAGER_APP_URL}/api/env/database?appId=${appId}&schemaName=${schemaName}`
+                    `${DB_MANAGER_APP_URL}/api/env/database?appId=${appId}&schemaName=${resolvedSchema}`
                 );
                 if (dbRes.ok) {
                     const dbData = await dbRes.json();
@@ -69,7 +71,7 @@ export async function POST(
                 // 回退：无法获取配置
                 databaseVars = {
                     DATABASE_URL: '',
-                    SCHEMA_NAME: schemaName,
+                    SCHEMA_NAME: resolvedSchema,
                 };
             }
         }
@@ -106,7 +108,7 @@ export async function POST(
             port,
             url,
             databaseUrl: databaseVars.DATABASE_URL || '',
-            schemaName: schemaName || '',
+            schemaName: resolvedSchema,
             permissionServiceUrl: PERMISSION_APP_URL,
             databaseServiceUrl: DB_MANAGER_APP_URL,
             adminServiceUrl: ADMIN_APP_URL,
