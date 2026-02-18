@@ -1,0 +1,21 @@
+[
+  {
+    "id": 1771387705936,
+    "appId": "my-app",
+    "appName": "我的应用",
+    "description": "我的应用 v1.0.0",
+    "status": "published",
+    "latestVersion": "1.0.0",
+    "menuConfig": [
+      {
+        "key": "home",
+        "label": "首页",
+        "icon": "LayoutGrid",
+        "path": "/"
+      }
+    ],
+    "url": "http://localhost:3002/apps/my-app/1.0.0",
+    "createdAt": "2026-02-18T04:08:25.936Z",
+    "updatedAt": "2026-02-18T04:08:25.936Z"
+  }
+]

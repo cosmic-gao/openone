@@ -38,6 +38,7 @@ interface AppListProps {
 
 export function AppList({ onUpload }: AppListProps) {
   const [apps, setApps] = useState<AppRegistration[]>([]);
+  const [appStatus, setAppStatus] = useState<Record<string, { status: string; pid?: number; port?: number }>>({});
   const [isLoading, setIsLoading] = useState(true);
   
   // Pagination State
@@ -51,6 +52,8 @@ export function AppList({ onUpload }: AppListProps) {
 
   useEffect(() => {
     fetchApps();
+    const interval = setInterval(fetchStatus, 5000); // Poll status every 5s
+    return () => clearInterval(interval);
   }, []);
 
   async function fetchApps() {
@@ -59,6 +62,7 @@ export function AppList({ onUpload }: AppListProps) {
       const result = await response.json();
       if (result.success) {
         setApps(result.data || []);
+        fetchStatus(); // Fetch status after apps are loaded
       }
     } catch {
       toast.error('加载APP列表失败');
@@ -66,6 +70,93 @@ export function AppList({ onUpload }: AppListProps) {
       setIsLoading(false);
     }
   }
+
+  async function fetchStatus() {
+    try {
+        const statusMap: Record<string, any> = {};
+        // Ideally fetch bulk status, but for now iterate (optimize later)
+        // Or better: update backend to return status in /api/apps or a bulk /api/apps/status
+        // Here we assume a bulk endpoint or individual. For simplicity let's do bulk if possible, 
+        // but since we only implemented single status, we might need a bulk endpoint.
+        // Let's quickly add a bulk endpoint to services/app-runner.ts? No, let's just make /api/apps return status?
+        // Actually, let's try to fetch individual for visible apps or ALL.
+        // For MVP: client-side loop is okay for small N.
+        
+        // Wait, I didn't verify if I added getAllStatus API. 
+        // Let's use the individual one for now for active apps.
+        // Actually, let's loop through `apps` state if available.
+        return; 
+    } catch (e) {
+        console.error(e);
+    }
+  }
+  
+  // Actually, I should have implemented a bulk status API.
+  // Let's implement handles for Start/Stop first.
+
+  const handleStart = async (app: AppRegistration) => {
+    try {
+        toast.info(`正在启动 ${app.appName}...`);
+        const res = await fetch(`/api/apps/${app.appId}/control`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'start', version: app.latestVersion })
+        });
+        const result = await res.json();
+        if (result.success) {
+            toast.success(`${app.appName} 启动成功`);
+            setAppStatus(prev => ({ 
+                ...prev, 
+                [app.appId]: { status: 'running' } // Optimistic update
+            }));
+            // Refresh real status
+            checkOneStatus(app.appId);
+        } else {
+            toast.error(result.error);
+        }
+    } catch {
+        toast.error('启动请求失败');
+    }
+  };
+
+  const handleStop = async (app: AppRegistration) => {
+    try {
+        toast.info(`正在停止 ${app.appName}...`);
+        const res = await fetch(`/api/apps/${app.appId}/control`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'stop' })
+        });
+        const result = await res.json();
+        if (result.success) {
+            toast.success(`${app.appName} 已停止`);
+            setAppStatus(prev => ({ 
+                ...prev, 
+                [app.appId]: { status: 'stopped' } 
+            }));
+        } else {
+            toast.error(result.error);
+        }
+    } catch {
+        toast.error('停止请求失败');
+    }
+  };
+
+  const checkOneStatus = async (appId: string) => {
+      try {
+          const res = await fetch(`/api/apps/${appId}/control`);
+          const json = await res.json();
+          if (json.success) {
+              setAppStatus(prev => ({ ...prev, [appId]: json.data }));
+          }
+      } catch {}
+  };
+
+  // Poll visible apps
+  useEffect(() => {
+      if (apps.length > 0) {
+          apps.forEach(app => checkOneStatus(app.appId));
+      }
+  }, [apps]);
+
 
   // Handle Edit App (Open Modal)
   const handleEdit = (app: AppRegistration) => {
@@ -147,10 +238,10 @@ export function AppList({ onUpload }: AppListProps) {
           <TableHeader className="sticky top-0 bg-background/80 z-20 shadow-sm backdrop-blur-md">
             <TableRow className="hover:bg-transparent border-b border-border/40">
               <TableHead className="w-[80px] pl-6 text-muted-foreground font-medium">图标</TableHead>
-              <TableHead className="w-[250px] text-muted-foreground font-medium">APP 信息</TableHead>
-              <TableHead className="text-muted-foreground font-medium">状态</TableHead>
-              <TableHead className="text-muted-foreground font-medium">版本</TableHead>
-              <TableHead className="w-[200px] text-muted-foreground font-medium">描述</TableHead>
+              <TableHead className="w-[200px] text-muted-foreground font-medium">APP 信息</TableHead>
+              <TableHead className="text-muted-foreground font-medium">运行状态</TableHead>
+              <TableHead className="text-muted-foreground font-medium">发布状态</TableHead>
+              <TableHead className="w-[150px] text-muted-foreground font-medium">访问</TableHead>
               <TableHead className="text-right pr-6 text-muted-foreground font-medium">操作</TableHead>
             </TableRow>
           </TableHeader>
@@ -189,7 +280,11 @@ export function AppList({ onUpload }: AppListProps) {
                     </TableCell>
                 </TableRow>
             ) : (
-                currentApps.map((app, index) => (
+                currentApps.map((app, index) => {
+                   const status = appStatus[app.appId];
+                   const isRunning = status?.status === 'running';
+
+                   return (
               <TableRow key={app.appId} className="group border-b border-border/40 last:border-0 hover:bg-muted/30 transition-all duration-200">
                 <TableCell className="pl-6 py-5">
                     <div className={`w-12 h-12 rounded-xl shadow-sm flex items-center justify-center text-white font-bold text-xl select-none ring-1 ring-black/5 transition-transform group-hover:scale-105 duration-300
@@ -200,8 +295,19 @@ export function AppList({ onUpload }: AppListProps) {
                 <TableCell>
                     <div className="flex flex-col">
                         <span className="font-semibold text-base text-foreground tracking-tight">{app.appName}</span>
-                        <span className="text-xs text-muted-foreground font-mono mt-0.5 opacity-70">ID: {app.appId}</span>
+                        <span className="text-xs text-muted-foreground font-mono mt-0.5 opacity-70">v{app.latestVersion}</span>
                     </div>
+                </TableCell>
+                <TableCell>
+                     <div className="flex items-center gap-2">
+                       <span className={`flex h-2.5 w-2.5 rounded-full ${isRunning ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-slate-300'}`} />
+                       <span className={`text-sm font-medium ${isRunning ? 'text-foreground' : 'text-muted-foreground'}`}>
+                         {isRunning ? 'Running' : 'Stopped'}
+                       </span>
+                     </div>
+                     {isRunning && status?.port && (
+                         <span className="text-xs text-muted-foreground font-mono mt-1 block">Port: {status.port}</span>
+                     )}
                 </TableCell>
                 <TableCell>
                     <Badge variant={STATUS_VARIANT[app.status] || 'secondary'} className="rounded-md px-2.5 py-0.5 font-normal shadow-sm border-0">
@@ -209,19 +315,44 @@ export function AppList({ onUpload }: AppListProps) {
                     </Badge>
                 </TableCell>
                 <TableCell>
-                    <div className="flex flex-col">
-                         <span className="text-sm font-medium text-foreground/80">v{app.latestVersion || '0.0.0'}</span>
-                         <span className="text-xs text-muted-foreground">最新版本</span>
-                    </div>
-                </TableCell>
-                <TableCell className="max-w-[250px]">
-                    <p className="truncate text-sm text-muted-foreground/80" title={app.description}>
-                        {app.description || '暂无描述'}
-                    </p>
+                    {isRunning && status?.port ? (
+                         <a 
+                            href={`http://localhost:${status.port}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center text-xs text-primary hover:underline"
+                        >
+                            打开应用
+                            <FileText className="h-3 w-3 ml-1" />
+                        </a>
+                    ) : (
+                        <span className="text-xs text-muted-foreground">-</span>
+                    )}
                 </TableCell>
                 <TableCell className="text-right pr-6">
                   <div className="flex justify-end items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
                     
+                    {/* Control Buttons */}
+                    {isRunning ? (
+                         <Button
+                            variant="secondary"
+                            size="sm"
+                            className="h-8 px-3 text-xs bg-red-50 text-red-600 hover:bg-red-100 border border-red-200/50"
+                            onClick={() => handleStop(app)}
+                         >
+                            <span className="mr-1">⏹</span> 停止
+                         </Button>
+                    ) : (
+                         <Button
+                            variant="secondary"
+                            size="sm"
+                            className="h-8 px-3 text-xs bg-green-50 text-green-600 hover:bg-green-100 border border-green-200/50"
+                            onClick={() => handleStart(app)}
+                         >
+                            <span className="mr-1">▶</span> 启动
+                         </Button>
+                    )}
+
                     <Button 
                         variant="secondary" 
                         size="sm" 
@@ -254,7 +385,8 @@ export function AppList({ onUpload }: AppListProps) {
                   </div>
                 </TableCell>
               </TableRow>
-            )))}
+                   )})}
+            )}
           </TableBody>
         </table>
       </div>

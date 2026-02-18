@@ -1,0 +1,26 @@
+{
+    "name": "my-app",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev -p 4000",
+        "build": "next build",
+        "start": "next start -p 4000",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "next": "^16.1.6",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+        "drizzle-orm": "^0.45.1",
+        "postgres": "^3.4.5",
+        "tailwindcss": "^4.1.18",
+        "@tailwindcss/postcss": "^4.1.18"
+    },
+    "devDependencies": {
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "typescript": "^5.7.3",
+        "drizzle-kit": "^0.31.9"
+    }
+}

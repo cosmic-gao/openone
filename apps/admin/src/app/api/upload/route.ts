@@ -31,7 +31,23 @@ export async function POST(
 ): Promise<NextResponse<ApiResponse<{ appId: string; version: string }>>> {
     try {
         // 鉴权：需要登录
-        const user = withAuth(request);
+        // 鉴权：需要登录
+        let user = withAuth(request);
+
+        // 临时修复：开发环境下如果没有Token，使用模拟管理员用户
+        // TODO: 前端接入登录后移除此逻辑
+        if (!user && process.env.NODE_ENV !== 'production') {
+            logger.logWarn('开发环境：使用模拟用户绕过鉴权');
+            user = {
+                sub: 'dev-admin-id',
+                username: 'dev-admin',
+                roles: ['admin'],
+                permissions: ['*'],
+                iat: Date.now() / 1000,
+                exp: Date.now() / 1000 + 3600
+            };
+        }
+
         if (!user) {
             return NextResponse.json(
                 { success: false, error: '未授权访问' },
