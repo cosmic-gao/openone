@@ -23,11 +23,39 @@ interface AppUploadModalProps {
 
 export function AppUploadModal({ isOpen, onClose, onSuccess }: AppUploadModalProps) {
   const [file, setFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const droppedFile = e.dataTransfer.files[0];
+      if (droppedFile.name.endsWith('.zip')) {
+        setFile(droppedFile);
+      } else {
+        toast.error('请上传 ZIP 格式的文件');
+      }
     }
   };
 
@@ -76,7 +104,13 @@ export function AppUploadModal({ isOpen, onClose, onSuccess }: AppUploadModalPro
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 hover:bg-muted/50 transition-colors cursor-pointer relative">
+          <div 
+            className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 transition-colors cursor-pointer relative
+                ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:bg-muted/50'}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             <Input
               type="file"
               accept=".zip"
@@ -94,8 +128,10 @@ export function AppUploadModal({ isOpen, onClose, onSuccess }: AppUploadModalPro
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                <Upload className="h-8 w-8" />
-                <span className="text-sm">点击或拖拽 ZIP 文件至此</span>
+                <Upload className={`h-8 w-8 transition-colors ${isDragging ? 'text-primary' : ''}`} />
+                <span className={`text-sm transition-colors ${isDragging ? 'text-primary font-medium' : ''}`}>
+                    {isDragging ? '释放文件以添加' : '点击或拖拽 ZIP 文件至此'}
+                </span>
               </div>
             )}
           </div>

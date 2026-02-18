@@ -142,78 +142,114 @@ export function AppList({ onUpload }: AppListProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Table Container - Scrollable */}
-      <div className={`flex-1 rounded-md border relative ${apps.length > 0 ? 'overflow-auto' : 'overflow-hidden'}`}>
+      <div className={`flex-1 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm relative shadow-sm ${apps.length > 0 ? 'overflow-auto' : 'overflow-hidden'}`}>
         <table className="w-full caption-bottom text-sm h-full">
-          <TableHeader className="sticky top-0 bg-background z-20 shadow-sm">
-            <TableRow className="hover:bg-transparent border-b">
-              <TableHead className="w-[80px] pl-6">图标</TableHead>
-              <TableHead className="w-[200px]">APP 名称</TableHead>
-              <TableHead>分类</TableHead>
-              <TableHead>APP ID</TableHead>
-              <TableHead>版本</TableHead>
-              <TableHead className="w-[300px]">描述</TableHead>
-              <TableHead className="text-right pr-6">操作</TableHead>
+          <TableHeader className="sticky top-0 bg-background/80 z-20 shadow-sm backdrop-blur-md">
+            <TableRow className="hover:bg-transparent border-b border-border/40">
+              <TableHead className="w-[80px] pl-6 text-muted-foreground font-medium">图标</TableHead>
+              <TableHead className="w-[250px] text-muted-foreground font-medium">APP 信息</TableHead>
+              <TableHead className="text-muted-foreground font-medium">状态</TableHead>
+              <TableHead className="text-muted-foreground font-medium">版本</TableHead>
+              <TableHead className="w-[200px] text-muted-foreground font-medium">描述</TableHead>
+              <TableHead className="text-right pr-6 text-muted-foreground font-medium">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {currentApps.length === 0 ? (
-                <TableRow className="h-full">
-                    <TableCell colSpan={7} className="text-center align-middle h-full">
-                        <div className="flex flex-col items-center justify-center text-muted-foreground h-full min-h-[400px]">
-                            <div className="bg-muted/50 p-4 rounded-full mb-4">
-                                <Package size={48} />
+                <TableRow className="h-full hover:bg-transparent border-0">
+                    <TableCell colSpan={6} className="text-center align-middle h-full border-0 p-0">
+                        <div className="flex flex-col items-center justify-center h-full min-h-[500px] animate-in fade-in duration-700">
+                            
+                            <div className="relative mb-8 group cursor-pointer">
+                                <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-violet-500/20 rounded-full blur-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-500 transform group-hover:scale-110" />
+                                <div className="relative bg-gradient-to-br from-card to-muted p-8 rounded-3xl border border-border/50 shadow-xl shadow-primary/5 group-hover:-translate-y-1 transition-transform duration-300">
+                                    <Package size={64} className="text-primary/80" strokeWidth={1} />
+                                </div>
                             </div>
-                            <h3 className="text-lg font-semibold mb-1 text-foreground">暂无应用程序</h3>
-                            <p className="max-w-xs mx-auto mb-6 text-sm">
-                                您还没有创建任何应用程序。
+                            
+                            <h3 className="text-2xl font-bold mb-3 text-foreground tracking-tight bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">
+                                暂无应用程序
+                            </h3>
+                            
+                            <p className="max-w-[300px] mx-auto mb-10 text-muted-foreground leading-relaxed text-balance">
+                                您还没有创建任何应用程序。开始构建您的第一个应用，开启无限可能。
                             </p>
-                            <Button onClick={onUpload}>
-                                上传 APP
+                            
+                            <Button 
+                                onClick={onUpload} 
+                                size="lg"
+                                className="px-8 h-12 rounded-full bg-gradient-to-r from-primary to-violet-600 hover:from-primary/90 hover:to-violet-600/90 text-primary-foreground font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 transform hover:scale-[1.02]"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Package className="w-4 h-4" />
+                                    <span>创建第一个 APP</span>
+                                </div>
                             </Button>
                         </div>
                     </TableCell>
                 </TableRow>
             ) : (
                 currentApps.map((app, index) => (
-              <TableRow key={app.appId} className="group border-b last:border-0 hover:bg-muted/30 transition-colors data-[state=selected]:bg-muted">
-                <TableCell className="pl-6 py-4">
-                    {/* Placeholder for App Icon */}
-                    <div className={`w-10 h-10 rounded-lg shadow-sm flex items-center justify-center text-white font-bold text-lg select-none ring-1 ring-black/5
-                        ${['bg-rose-500', 'bg-blue-500', 'bg-emerald-500', 'bg-amber-500', 'bg-violet-500'][index % 5]}`}>
+              <TableRow key={app.appId} className="group border-b border-border/40 last:border-0 hover:bg-muted/30 transition-all duration-200">
+                <TableCell className="pl-6 py-5">
+                    <div className={`w-12 h-12 rounded-xl shadow-sm flex items-center justify-center text-white font-bold text-xl select-none ring-1 ring-black/5 transition-transform group-hover:scale-105 duration-300
+                        ${['bg-gradient-to-br from-rose-400 to-rose-600', 'bg-gradient-to-br from-blue-400 to-blue-600', 'bg-gradient-to-br from-emerald-400 to-emerald-600', 'bg-gradient-to-br from-amber-400 to-amber-600', 'bg-gradient-to-br from-violet-400 to-violet-600'][index % 5]}`}>
                         {app.appName.substring(0, 1).toUpperCase()}
                     </div>
                 </TableCell>
-                <TableCell className="font-medium text-base text-foreground">
-                    {app.appName}
+                <TableCell>
+                    <div className="flex flex-col">
+                        <span className="font-semibold text-base text-foreground tracking-tight">{app.appName}</span>
+                        <span className="text-xs text-muted-foreground font-mono mt-0.5 opacity-70">ID: {app.appId}</span>
+                    </div>
                 </TableCell>
                 <TableCell>
-                    <Badge variant={STATUS_VARIANT[app.status] || 'secondary'} className="rounded-md px-2.5 py-0.5 font-normal shadow-none border-transparent bg-secondary/50 text-secondary-foreground hover:bg-secondary/60">
+                    <Badge variant={STATUS_VARIANT[app.status] || 'secondary'} className="rounded-md px-2.5 py-0.5 font-normal shadow-sm border-0">
                         {STATUS_LABELS[app.status] || app.status}
                     </Badge>
                 </TableCell>
                 <TableCell>
-                    <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-xs font-semibold text-muted-foreground">
-                        {app.appId}
-                    </code>
+                    <div className="flex flex-col">
+                         <span className="text-sm font-medium text-foreground/80">v{app.latestVersion || '0.0.0'}</span>
+                         <span className="text-xs text-muted-foreground">最新版本</span>
+                    </div>
                 </TableCell>
-                <TableCell>
-                    <span className="text-sm font-medium text-muted-foreground">v{app.latestVersion || '0.0.0'}</span>
-                </TableCell>
-                <TableCell className="max-w-[300px]">
-                    <p className="truncate text-sm text-muted-foreground" title={app.description}>
+                <TableCell className="max-w-[250px]">
+                    <p className="truncate text-sm text-muted-foreground/80" title={app.description}>
                         {app.description || '暂无描述'}
                     </p>
                 </TableCell>
                 <TableCell className="text-right pr-6">
-                  <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(app)} title="编辑信息">
-                        <Edit className="h-4 w-4" />
+                  <div className="flex justify-end items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                    
+                    <Button 
+                        variant="secondary" 
+                        size="sm" 
+                        className="h-8 px-3 text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200/50 shadow-sm transition-colors"
+                        onClick={() => handleEdit(app)}
+                    >
+                        <Edit className="h-3.5 w-3.5 mr-1.5" />
+                        编辑
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => handleEnv(app)} title="环境变量">
-                        <Settings className="h-4 w-4" />
+
+                    <Button 
+                        variant="secondary" 
+                        size="sm" 
+                        className="h-8 px-3 text-xs bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-200/50 shadow-sm transition-colors"
+                        onClick={() => handleEnv(app)}
+                    >
+                        <Settings className="h-3.5 w-3.5 mr-1.5" />
+                        配置
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(app.appId)} title="删除">
-                        <Trash2 className="h-4 w-4" />
+
+                    <Button 
+                        variant="secondary" 
+                        size="sm" 
+                        className="h-8 px-3 text-xs bg-red-50 text-red-600 hover:bg-red-100 border border-red-200/50 shadow-sm transition-colors"
+                        onClick={() => handleDelete(app.appId)}
+                    >
+                        <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                        删除
                     </Button>
                   </div>
                 </TableCell>
@@ -224,7 +260,7 @@ export function AppList({ onUpload }: AppListProps) {
       </div>
 
       {/* Pagination Footer */}
-      <div className="flex items-center justify-between px-6 py-4 border-t bg-muted/5">
+      <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-card/50">
         <div className="text-sm text-muted-foreground">
            共 {totalItems} 条记录
         </div>
@@ -233,7 +269,7 @@ export function AppList({ onUpload }: AppListProps) {
                 {/* Simple Page Size Selector */}
                 <span className="text-muted-foreground">每页行数</span>
                 <select 
-                    className="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="h-8 w-[70px] rounded-md border border-input bg-secondary/50 px-2 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     value={pageSize}
                     onChange={(e) => {
                         setPageSize(Number(e.target.value));
@@ -247,11 +283,11 @@ export function AppList({ onUpload }: AppListProps) {
                     ))}
                 </select>
             </div>
-            <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+            <div className="flex w-[100px] items-center justify-center text-sm font-medium text-muted-foreground">
                 第 {currentPage} / {totalPages || 1} 页
             </div>
             <div className="flex items-center space-x-2">
-                <Button variant="outline" size="icon" className="h-8 w-8 p-0" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1}>
+                <Button variant="secondary" size="icon" className="h-8 w-8 p-0 bg-secondary/50 hover:bg-secondary rounded-full" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1}>
                     <span className="sr-only">上一页</span>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -268,7 +304,7 @@ export function AppList({ onUpload }: AppListProps) {
                         <path d="m15 18-6-6 6-6" />
                     </svg>
                 </Button>
-                <Button variant="outline" size="icon" className="h-8 w-8 p-0" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>
+                <Button variant="secondary" size="icon" className="h-8 w-8 p-0 bg-secondary/50 hover:bg-secondary rounded-full" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>
                     <span className="sr-only">下一页</span>
                      <svg
                         xmlns="http://www.w3.org/2000/svg"

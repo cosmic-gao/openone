@@ -30,25 +30,25 @@
 /* === OpenOne 深色 Indigo 主题 === */
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.16 0.015 265);
-  --foreground: oklch(0.985 0.002 247);
-  --card: oklch(0.21 0.02 265);
-  --card-foreground: oklch(0.985 0.002 247);
-  --popover: oklch(0.23 0.02 265);
-  --popover-foreground: oklch(0.985 0.002 247);
-  --primary: oklch(0.55 0.24 277);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.25 0.015 265);
-  --secondary-foreground: oklch(0.985 0.002 247);
-  --muted: oklch(0.25 0.015 265);
-  --muted-foreground: oklch(0.65 0.02 260);
-  --accent: oklch(0.30 0.02 265);
-  --accent-foreground: oklch(0.985 0.002 247);
+  --background: oklch(0.05 0.01 260);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.08 0.01 260);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.08 0.01 260);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.50 0.20 270);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.15 0.02 260);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.15 0.02 260);
+  --muted-foreground: oklch(0.60 0.02 260);
+  --accent: oklch(0.15 0.02 260);
+  --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.58 0.22 29);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.32 0.02 262);
-  --input: oklch(0.32 0.02 262);
-  --ring: oklch(0.55 0.24 277);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.20 0.02 260);
+  --input: oklch(0.20 0.02 260);
+  --ring: oklch(0.50 0.20 270);
 }
 
 /* === 基础样式 === */
